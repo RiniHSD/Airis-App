@@ -1,97 +1,106 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+![GitHub repo size](https://img.shields.io/github/repo-size/RiniHSD/Airis-App)
+![GitHub issues](https://img.shields.io/github/issues/RiniHSD/Airis-App)
+![GitHub last commit](https://img.shields.io/github/last-commit/RiniHSD/Airis-App)
+![MIT License](https://img.shields.io/github/license/RiniHSD/Airis-App)
 
-# Getting Started
+# 🛰️ AIRIS (Aplikasi Pemetaan dan Inventarisasi Irigasi Berbasis Mobile GIS)
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+**AIRIS** adalah aplikasi **Mobile GIS** berbasis **React Native** yang dirancang untuk memetakan jaringan irigasi secara real-time dan akurat. Aplikasi ini terintegrasi dengan perangkat **GNSS Low Cost** dan dikembangkan sebagai bagian dari Proyek Akhir Program Studi D4 Sistem Informasi Geografis, UGM.
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 📌 Fitur Utama
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- 🔗 Koneksi Bluetooth dengan perangkat GNSS Low Cost
+- 🗺️ Peta interaktif jaringan irigasi (primer, sekunder, tersier)
+- 📝 Form survei digital untuk mencatat atribut bangunan irigasi
+- 📷 Dokumentasi foto untuk setiap titik bangunan
+- 🔄 Fitur tambah, lihat, dan edit data secara langsung dari lapangan
+- 📡 Dukungan pengambilan data koordinat RTK dengan akurasi sentimeter
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
-```
+## ⚙️ Teknologi
 
-## Step 2: Build and run your app
+| Komponen | Teknologi |
+|----------|-----------|
+| Framework | React Native |
+| Bahasa Pemrograman | JavaScript |
+| Basis Data | PostgreSQL + PostGIS |
+| Pemetaan | LeafletJS |
+| Perangkat GNSS | TGS EQ1 Receiver |
+| API Test | Postman |
+| UI/UX Design | Figma |
+| Sistem Operasi | Android (min. versi 7.0) |
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+---
 
-### Android
+## 🧪 Uji Kelayakan
 
-```sh
-# Using npm
-npm run android
+Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama:
 
-# OR using Yarn
-yarn android
-```
+- 📚 Learnability (kemudahan belajar)
+- 🔄 Flexibility (keluwesan penggunaan)
+- ✅ Effectiveness (efektivitas penggunaan)
+- 😊 Attitude (kepuasan pengguna)
 
-### iOS
+---
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## 🌍 Lokasi Studi Kasus
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+> **Saluran Irigasi Van Der Wijck**, Kabupaten Sleman, DI Yogyakarta  
+> Sumber air: Sungai Progo  
+> Dikelola oleh BBWS Serayu Opak dan DPUPESDM DIY
 
-```sh
-bundle install
-```
+---
 
-Then, and every time you update your native dependencies, run:
+## 🗃️ Struktur Database
 
-```sh
-bundle exec pod install
-```
+### Tabel `bangunan_irigasi`
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+| Field | Tipe | Deskripsi |
+|-------|------|-----------|
+| gid | Integer (PK) | ID bangunan |
+| nama | Varchar(50) | Nama/kode bangunan |
+| jenis_bgn | Varchar(50) | Jenis bangunan |
+| koor | Geometry(Point, 4326) | Lokasi spasial |
+| tgl_survei | Date | Tanggal pemetaan |
+| kondisi | Varchar(50) | Kondisi fisik |
+| luas_oncoran | Numeric(10,2) | Luas sawah terairi |
+| ... | ... | Lainnya |
 
-```sh
-# Using npm
-npm run ios
+### Tabel `saluran_irigasi`
 
-# OR using Yarn
-yarn ios
-```
+| Field | Tipe | Deskripsi |
+|-------|------|-----------|
+| id | Integer (PK) | ID saluran |
+| nama_saluran | Varchar(50) | Nama saluran |
+| jenis_saluran | Varchar(50) | Primer/Sekunder/Tersier |
+| id_parent | Integer (FK) | Relasi saluran induk |
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+---
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🚀 Cara Menjalankan
 
-## Step 3: Modify your app
+1. Clone repositori ini:
+   ```bash
+   git clone https://github.com/RiniHSD/Airis-App.git
+   cd Airis-App
 
-Now that you have successfully run the app, let's make changes!
+2. Install semua dependensi:
+   ```bash
+   npm install
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+3. Jalankan aplikasi di emulator atau perangkat Android:
+   ```bash
+   npx react-native run-android
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+4. Pastikan GNSS Low Cost aktif dan Bluetooth diaktifkan di perangkat.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 👩‍💻 Kontributor
+Rini Husadiyah
+Program Studi Sarjana Terapan Sistem Informasi Geografis
+Departemen Teknologi Kebumian
+Sekolah Vokasi
+Universitas Gadjah Mada
