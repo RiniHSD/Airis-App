@@ -47,8 +47,8 @@ export default function GPSHP() {
     <ScrollView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.title}>📍 Lokasi dari HP</Text>
-        <Text>Lat: {location.latitude}</Text>
-        <Text>Lon: {location.longitude}</Text>
+        <Text>Latitude: {location.latitude}</Text>
+        <Text>Longitude: {location.longitude}</Text>
 
         <TouchableOpacity
           style={[styles.scanButton, { marginTop: 20 }]}

@@ -15,6 +15,8 @@ const ConnectNTRIP = ({navigation}) => {
   const [ssid, setSsid] = useState('');
   const [password, setPassword] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [ntripConnected, setNtripConnected] = useState(false);
+
 
   // Redux state to monitor GNSSINFO stream
   const ntripstatus = useSelector(
@@ -37,34 +39,27 @@ const ConnectNTRIP = ({navigation}) => {
   useEffect(() => {
     if (ntripstatus) {
       const dataSplit = ntripstatus.split(',');
-      console.log('Parsed GNSSINFO Data:', dataSplit);
-
-      // Ensure data length and structure is correct
       if (dataSplit.length > 7) {
-        const ntripType = dataSplit[5]?.trim(); // Check NTRIP status
-        const ntripConnection = dataSplit[6]?.trim(); // Check ON/OFF status
-
+        const ntripType = dataSplit[5]?.trim();
+        const ntripConnection = dataSplit[6]?.trim();
+  
         if (ntripType === 'NTRIP' && ntripConnection === 'CONNECTED') {
-          console.log('Triggering Alert: NTRIP is now connected.');
-          setIsConnecting(false); // Reset connection state
-          Alert.alert('NTRIP Status', 'NTRIP is now connected.');
+          setIsConnecting(false);
+          setNtripConnected(true);
+          // Alert.alert('NTRIP Status', 'NTRIP is now connected.'); // tidak digunakan karena sudah ditampilkan statusnya
         } else {
-          console.log('NTRIP not active yet or incorrect data:', {
-            ntripType,
-            ntripConnection,
-          });
+          setNtripConnected(false);
         }
-      } else {
-        console.error('GNSSINFO data format is invalid:', ntripstatus);
       }
     }
   }, [ntripstatus]);
+  
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.card}>
-          <Text style={styles.title}>Koneksi Wifi</Text>
+          <Text style={styles.title}>KONEKSI WIFI</Text>
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>SSID</Text>
@@ -92,8 +87,28 @@ const ConnectNTRIP = ({navigation}) => {
           </View>
 
           <TouchableOpacity style={styles.button} onPress={connectWifi} disabled={isConnecting}>
-            <Text style={styles.buttonText}>Connect</Text>
+            <Text style={styles.buttonText}>Hubungkan</Text>
           </TouchableOpacity>
+
+          <View style={{ marginTop: 20 }}>
+            <Text style={[styles.label, { fontWeight: 'bold' }]}>
+              Status NTRIP:{' '}
+              <Text style={{ color: ntripConnected ? '#17a325' : '#D91A1A' }}>
+                {ntripConnected ? 'Sudah terhubung' : 'Belum terhubung'}
+              </Text>
+            </Text>
+          </View>
+
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.ntripInfo}>
+              Networked Transport of RTCM via Internet Protocol (NTRIP) adalah sistem koreksi posisi GNSS secara real-time melalui jaringan internet. 
+              Dengan NTRIP, koordinat yang diperoleh dari alat GNSS menjadi lebih akurat dan presisi.
+            </Text>
+            <Text style={styles.ntripInfo}>
+              Silahkan beri koneksi internet kepada perangkat GNSS Geodetik dengan menghubungkan WiFi atau Hotspot Mobile Handphone anda.
+            </Text>
+          </View>
+
         </View>
       </View>
     </ScrollView>
@@ -120,20 +135,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5, 
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 0,
-  },
-  logo: {
-    width: 250,
-    height: 200,
-  },
   title: {
+    fontWeight: 'bold',
     fontSize: 28,
-    fontFamily: 'Alkalami-Regular',
-    color: '#D91A1A',
+    color: '#2196F3',
     textAlign: 'center',
     marginBottom: 1,
+    marginTop: 10,
   },
   inputContainer: {
     marginBottom: 20,
@@ -142,7 +150,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
     color: '#333',
-    fontFamily: 'Alkalami-Regular',
   },
   input: {
     borderWidth: 1,
@@ -152,8 +159,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#D91A1A',
-    paddingVertical: 5,
+    backgroundColor: '#17a325',
+    paddingVertical: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10, 
@@ -161,18 +168,23 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'Alkalami-Regular',
+    fontWeight: 'bold',
   },
   loginText: {
     color: '#000000',
     fontSize: 16,
-    fontFamily: 'Alkalami-Regular',
   },
   boldText: {
     color: '#D91A1A',
     fontSize: 16,
-    fontFamily: 'Alkalami-Regular',
   },
+  ntripInfo: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'justify',
+    lineHeight: 20,
+    marginBottom: 10,
+  },  
 });
 
 export default ConnectNTRIP;

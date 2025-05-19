@@ -204,25 +204,38 @@ const App = ({navigation}) => {
             />
         </View>
 
-        <View style={{width: '100%'}}>
-            {connectedDevice && (<Button style={styles.smallButton} title="Hubungkan Wifi" onPress={connectWifi} />)}
-        </View>
+        {connectedDevice && (
+          <TouchableOpacity
+            onPress={connectWifi}
+            style={{
+              backgroundColor: '#17a325',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 8,
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Hubungkan Wi-Fi</Text>
+          </TouchableOpacity>
+        )}
+
 
         <View style={styles.gpsContainer}>
             <View style={styles.gpsRow}>
-                <Text style={styles.label}>Latitude GNSS</Text>
+                <Text style={styles.label}>Latitude</Text>
                 <Text style={styles.value}>{latitude !== null ? latitude : 'Memuat...'}</Text>
             </View>
             <View style={styles.gpsRow}>
-                <Text style={styles.label}>Longitude GNSS</Text>
+                <Text style={styles.label}>Longitude</Text>
                 <Text style={styles.value}>{longitude !== null ? longitude : 'Memuat...'}</Text>
             </View>
             <View style={styles.gpsRow}>
-                <Text style={styles.label}>Altitude GNSS</Text>
+                <Text style={styles.label}>Altitude</Text>
                 <Text style={styles.value}>{altitude !== null ? `${altitude} m` : 'Memuat...'}</Text>
             </View>
             <View style={styles.gpsRow}>
-                <Text style={styles.label}>Accuracy GNSS</Text>
+                <Text style={styles.label}>Akurasi</Text>
                 <Text style={styles.value}>{hdop !== null ? hdop : 'Memuat...'}</Text>
             </View>
         </View>
