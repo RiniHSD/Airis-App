@@ -67,11 +67,8 @@ export default function AccountPage({ navigation }) {
 
         <View style={styles.socialIcons}>
           {[
-            { url: 'https://wa.me/6282286461937', icon: require('../assets/icons/whatsapp.png') },
-            { url: 'https://www.instagram.com/hsdyh.rn', icon: require('../assets/icons/instagram.png') },
             { url: 'mailto:rinihusadiyah@gmail.com', icon: require('../assets/icons/email.png') },
             { url: 'https://www.linkedin.com/in/rinihusadiyah/', icon: require('../assets/icons/linkedin.png') },
-            { url: 'https://github.com/RiniHSD', icon: require('../assets/icons/github.png') },
           ].map((item, index) => (
             <TouchableOpacity key={index} onPress={() => Linking.openURL(item.url)}>
               <Image source={item.icon} style={styles.icon} />
@@ -92,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#0daaf0',
     color: '#fff',
     textAlign: 'center',
     paddingVertical: 12,

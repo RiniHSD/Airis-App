@@ -124,5 +124,17 @@ const parseCoordinates = (input) => {
   return null;
 };
 
+const extractGGAInfo = (ggaString) => {
+  const parts = ggaString.split(',');
+  if (parts.length > 9) {
+    return {
+      hdop: parseFloat(parts[8]),        // Horizontal Dilution of Precision (accuracy)
+      altitude: parseFloat(parts[9]),    // Altitude dalam meter
+    };
+  }
+  return { hdop: null, altitude: null };
+};
+
+
 // Ekspor kedua fungsi
-export { CoordinateConverter, conferalt, NmeaParser,parseCoordinates };
+export { CoordinateConverter, conferalt, NmeaParser, parseCoordinates, extractGGAInfo };

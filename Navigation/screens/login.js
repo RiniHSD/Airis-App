@@ -13,7 +13,7 @@ export default function Login({ navigation, onLogin }) {
         }
         
         try {
-            const response = await fetch('http://192.168.1.16:3000/auth/login', {
+            const response = await fetch('http://10.33.76.48:3000/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })

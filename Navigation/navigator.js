@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import GPSPage from './screens/gps';
+import GPSStack from './screens/GPSStack';
 import MapPage from './screens/map';
 import SurveyPage from './screens/survey';
 import ListPage from './screens/list';
@@ -73,7 +74,7 @@ function MainTabs({ navigation }) {
           },
         })}
       >
-        <Tab.Screen name="GPS" component={GPSPage} />
+        <Tab.Screen name="GPS" component={GPSStack} />
         <Tab.Screen name="Map" component={MapPage} />
         <Tab.Screen name="Survey" component={SurveyPage} />
         <Tab.Screen name="List" component={ListPage} />
