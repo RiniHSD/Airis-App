@@ -9,56 +9,56 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation from '@react-native-community/geolocation';
 import { WebView } from 'react-native-webview';
 
 export default function GPSHP() {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const webViewRef = useRef(null);
 
-  // useEffect(() => {
-  //   const startUp = async () => {
-  //     if (Platform.OS === 'android') {
-  //       await PermissionsAndroid.request(
-  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-  //       );
-  //     }
-  //     getLocation();
-  //   };
+  useEffect(() => {
+    const startUp = async () => {
+      if (Platform.OS === 'android') {
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
+      }
+      getLocation();
+    };
 
-  //   startUp();
-  // }, []);
+    startUp();
+  }, []);
 
-  // const getLocation = () => {
-  //   Geolocation.getCurrentPosition(
-  //     (pos) => {
-  //       const coords = pos.coords;
-  //       setLocation({
-  //         latitude: coords.latitude,
-  //         longitude: coords.longitude,
-  //       });
-  //     },
-  //     (error) => console.error('Geolocation error:', error),
-  //     { enableHighAccuracy: true, timeout: 20000 }
-  //   );
-  // };
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = pos.coords;
+        setLocation({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+      },
+      (error) => console.error('Geolocation error:', error),
+      { enableHighAccuracy: true, timeout: 20000 }
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.title}>📍 Lokasi dari HP</Text>
-        <Text>Lat: {location.latitude ?? '-'}</Text>
-        <Text>Lon: {location.longitude ?? '-'}</Text>
+        <Text>Lat: {location.latitude}</Text>
+        <Text>Lon: {location.longitude}</Text>
 
         <TouchableOpacity
           style={[styles.scanButton, { marginTop: 20 }]}
-          // onPress={getLocation}
+          onPress={getLocation}
         >
           <Text style={styles.scanButtonText}>Ambil Ulang Lokasi</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={{ height: 300, marginVertical: 10 }}>
+      <View style={{ height: 550, marginVertical: 10 }}>
         <WebView
           ref={webViewRef}
           source={{ uri: 'https://rinihsd.github.io/WebView-PRESISI/peta.html' }}
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scanButtonText: { 
-    color: '#000', 
+    color: '#fff', 
     fontWeight: 'bold' 
   },
 });

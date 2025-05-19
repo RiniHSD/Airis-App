@@ -177,10 +177,10 @@ const App = ({navigation}) => {
         <View style={styles.container}>
             <View style={styles.actionRow}>
                 <TouchableOpacity style={styles.smallButton} onPress={RequestScan}>
-                    <Text style={styles.smallButtonText}>Hubungkan ke Alat</Text>
+                    <Text style={styles.smallButtonText}>Pindai Perangkat</Text>
                 </TouchableOpacity>
                 {connectedDevice && (
-                <TouchableOpacity style={styles.smallButton} onPress={Disconnected}>
+                <TouchableOpacity style={styles.smallButton1} onPress={Disconnected}>
                 <Text style={styles.smallButtonText}>Putuskan</Text>
                 </TouchableOpacity>
                 )}
@@ -195,7 +195,7 @@ const App = ({navigation}) => {
                 <View style={styles.deviceRow}>
                     <Text style={styles.deviceText}>{item.name || item.id}</Text>
                     <TouchableOpacity
-                    style={connectedDevice?.address === item.address ? styles.buttonDisconnect : styles.buttonConnect}
+                    style={connectedDevice?.address === item.address ? styles.buttonDisconnect1 : styles.buttonConnect}
                     onPress={() => ReqConnect(item)}>
                     <Text style={styles.connectText}>Hubungkan</Text>
                     </TouchableOpacity>
@@ -205,7 +205,7 @@ const App = ({navigation}) => {
         </View>
 
         <View style={{width: '100%'}}>
-            {connectedDevice && ( <Button style={styles.smallButton} title="Hubungkan Wifi" onPress={connectWifi} />)}
+            {connectedDevice && (<Button style={styles.smallButton} title="Hubungkan Wifi" onPress={connectWifi} />)}
         </View>
 
         <View style={styles.gpsContainer}>
@@ -262,6 +262,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',  
   },
+  smallButton1: {
+    backgroundColor: '#f44336',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    alignItems: 'center',  
+  },
   smallButtonText : {
     color: 'white',
     fontWeight: 'bold',
@@ -301,6 +308,12 @@ const styles = StyleSheet.create({
   },
   buttonDisconnect: {
     backgroundColor: '#f44336',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  buttonDisconnect1: {
+    backgroundColor: '#17a325',
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 10,
