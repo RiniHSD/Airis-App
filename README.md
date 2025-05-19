@@ -99,5 +99,6 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
 - Sekolah Vokasi
 - Universitas Gadjah Mada
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rinihusadiyah/)  
-GitHub: [@RiniHSD](https://github.com/RiniHSD)
+## 📫 How to reach me
+<a href="https://www.linkedin.com/in/rinihusadiyah/"><img src="https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg" width="40" height="40" /></a>
+<a href="https://mail.google.com/mail/u/rinihusadiyah@gmail.com/#inbox?compose=new"><img src="https://www.vectorlogo.zone/logos/gmail/gmail-icon.svg" width="40" height="40"/></a>
