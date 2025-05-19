@@ -1,9 +1,4 @@
-![GitHub repo size](https://img.shields.io/github/repo-size/RiniHSD/Airis-App)
-![GitHub issues](https://img.shields.io/github/issues/RiniHSD/Airis-App)
-![GitHub last commit](https://img.shields.io/github/last-commit/RiniHSD/Airis-App)
-![MIT License](https://img.shields.io/github/license/RiniHSD/Airis-App)
-
-# 🛰️ AIRIS (Aplikasi Pemetaan dan Inventarisasi Irigasi Berbasis Mobile GIS)
+# 🛰️ AIRIS (Aplikasi Pemetaan dan Inventarisasi Jaringan Irigasi Berbasis Mobile GIS)
 
 **AIRIS** adalah aplikasi **Mobile GIS** berbasis **React Native** yang dirancang untuk memetakan jaringan irigasi secara real-time dan akurat. Aplikasi ini terintegrasi dengan perangkat **GNSS Low Cost** dan dikembangkan sebagai bagian dari Proyek Akhir Program Studi D4 Sistem Informasi Geografis, UGM.
 
@@ -39,17 +34,16 @@
 
 Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama:
 
-- 📚 Learnability (kemudahan belajar)
-- 🔄 Flexibility (keluwesan penggunaan)
-- ✅ Effectiveness (efektivitas penggunaan)
-- 😊 Attitude (kepuasan pengguna)
+- 📚 Learnability
+- 🔄 Flexibility
+- ✅ Effectiveness
+- 😊 Attitude
 
 ---
 
 ## 🌍 Lokasi Studi Kasus
 
 > **Saluran Irigasi Van Der Wijck**, Kabupaten Sleman, DI Yogyakarta  
-> Sumber air: Sungai Progo  
 > Dikelola oleh BBWS Serayu Opak dan DPUPESDM DIY
 
 ---
@@ -98,9 +92,12 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
 4. Pastikan GNSS Low Cost aktif dan Bluetooth diaktifkan di perangkat.
 
 
-## 👩‍💻 Kontributor
-Rini Husadiyah
-Program Studi Sarjana Terapan Sistem Informasi Geografis
-Departemen Teknologi Kebumian
-Sekolah Vokasi
-Universitas Gadjah Mada
+## 👩‍💻 Developer
+- Rini Husadiyah
+- Program Studi Sarjana Terapan Sistem Informasi Geografis
+- Departemen Teknologi Kebumian
+- Sekolah Vokasi
+- Universitas Gadjah Mada
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rinihusadiyah/)  
+GitHub: [@RiniHSD](https://github.com/RiniHSD)
