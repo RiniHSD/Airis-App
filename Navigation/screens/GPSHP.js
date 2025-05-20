@@ -1,4 +1,3 @@
-// screens/GPSHP.js (berbasis gps1.js tanpa BLE)
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
@@ -11,10 +10,15 @@ import {
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { WebView } from 'react-native-webview';
+import { useDispatch } from 'react-redux';
+import { setStreamData } from '../config/streamSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function GPSHP() {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const webViewRef = useRef(null);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const startUp = async () => {
@@ -31,12 +35,14 @@ export default function GPSHP() {
 
   const getLocation = () => {
     Geolocation.getCurrentPosition(
-      (pos) => {
-        const coords = pos.coords;
-        setLocation({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        });
+      async (pos) => {
+        const coords = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        };
+        setLocation(coords);
+        dispatch(setStreamData({ type: 'INTERNAL', data: coords }));
+        await AsyncStorage.setItem('internal_coords', JSON.stringify(coords));
       },
       (error) => console.error('Geolocation error:', error),
       { enableHighAccuracy: true, timeout: 20000 }

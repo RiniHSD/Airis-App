@@ -9,12 +9,26 @@ import {
   PermissionsAndroid,
   Platform,
 } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
 import { useSelector } from 'react-redux';
 import { CoordinateConverter, extractGGAInfo } from '../Helpers/geo_helpers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SurveyPage() {
-  const [internalCoords, setInternalCoords] = useState(null);
+  const internalCoords = useSelector(state => state.streamData?.streams?.['INTERNAL']);
+  const streamDataGNGGA = useSelector(state => state.streamData?.streams?.['GNGGA']);
+  const [internalBackup, setInternalBackup] = useState(null);
+  const internalData = internalCoords ?? internalBackup;
+
+  useEffect(() => {
+    const fetchStoredInternal = async () => {
+      const saved = await AsyncStorage.getItem('internal_coords');
+      if (saved) {
+        setInternalBackup(JSON.parse(saved));
+      }
+    };
+    fetchStoredInternal();
+  }, []);
+
   const [selectedCoords, setSelectedCoords] = useState('');
   const [form, setForm] = useState({
     nama: '',
@@ -23,9 +37,7 @@ export default function SurveyPage() {
     fungsi: '',
     bahan: '',
   });
-
-  // Ambil stream GNGGA dari Redux
-  const streamDataGNGGA = useSelector(state => state.streamData?.streams?.['GNGGA']);
+  
   let gnssCoords = null;
   let altitude = null;
   let hdop = null;
@@ -41,52 +53,52 @@ export default function SurveyPage() {
     console.error('Error parsing streamDataGNGGA:', error);
   }
 
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Akses Lokasi',
-            message: 'Aplikasi membutuhkan akses lokasi untuk membaca koordinat GPS.',
-            buttonPositive: 'Izinkan',
-            buttonNegative: 'Tolak',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      }
-      return true;
-    };
+  // useEffect(() => {
+  //   const requestLocationPermission = async () => {
+  //     if (Platform.OS === 'android') {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //         {
+  //           title: 'Akses Lokasi',
+  //           message: 'Aplikasi membutuhkan akses lokasi untuk membaca koordinat GPS.',
+  //           buttonPositive: 'Izinkan',
+  //           buttonNegative: 'Tolak',
+  //         }
+  //       );
+  //       return granted === PermissionsAndroid.RESULTS.GRANTED;
+  //     }
+  //     return true;
+  //   };
 
-    const getLocation = async () => {
-      const hasPermission = await requestLocationPermission();
-      if (!hasPermission) {
-        console.warn('❌ Izin lokasi ditolak oleh user');
-        return;
-      }
+  //   const getLocation = async () => {
+  //     const hasPermission = await requestLocationPermission();
+  //     if (!hasPermission) {
+  //       console.warn('❌ Izin lokasi ditolak oleh user');
+  //       return;
+  //     }
 
-      Geolocation.getCurrentPosition(
-        position => {
-          setInternalCoords({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        error => {
-          console.warn('⚠️ Gagal mendapatkan posisi internal:', error.message);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 1000,
-          forceRequestLocation: true,
-          showLocationDialog: true,
-        }
-      );
-    };
+  //     Geolocation.getCurrentPosition(
+  //       position => {
+  //         setInternalCoords({
+  //           latitude: position.coords.latitude,
+  //           longitude: position.coords.longitude,
+  //         });
+  //       },
+  //       error => {
+  //         console.warn('⚠️ Gagal mendapatkan posisi internal:', error.message);
+  //       },
+  //       {
+  //         enableHighAccuracy: true,
+  //         timeout: 20000,
+  //         maximumAge: 1000,
+  //         forceRequestLocation: true,
+  //         showLocationDialog: true,
+  //       }
+  //     );
+  //   };
 
-    getLocation();
-  }, []);
+  //   getLocation();
+  // }, []);
 
   const renderCardEksternal = () => (
     <View style={styles.card}>
@@ -119,8 +131,8 @@ export default function SurveyPage() {
         <TouchableOpacity
           style={styles.recordButtonSmall}
           onPress={() => {
-            if (internalCoords?.latitude && internalCoords?.longitude) {
-              setSelectedCoords(`${internalCoords.latitude}, ${internalCoords.longitude}`);
+            if (internalData?.latitude && internalData?.longitude) {
+              setSelectedCoords(`${internalData.latitude}, ${internalData.longitude}`);
             } else {
               setSelectedCoords('Tidak ada koordinat internal');
             }
@@ -129,8 +141,8 @@ export default function SurveyPage() {
           <Text style={styles.recordTextSmall}>Rekam</Text>
         </TouchableOpacity>
       </View>
-      <Text>Latitude  : {internalCoords?.latitude ?? '-'}</Text>
-      <Text>Longitude : {internalCoords?.longitude ?? '-'}</Text>
+      <Text>Latitude  : {internalData?.latitude ?? 'Belum tersedia dari GPSHP'}</Text>
+      <Text>Longitude  : {internalData?.longitude ?? 'Belum tersedia dari GPSHP'}</Text>
     </View>
   );
 

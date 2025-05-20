@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
-const LoadingScreen = ({ size = 80, color = '#eb4034' }) => {
+const LoadingScreen = ({ size = 80, color = '#03A9F4' }) => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size={size} color={color} />
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,  
     justifyContent: 'center',  
     alignItems: 'center',  
-    backgroundColor: '##eb4034',  
+    backgroundColor: '##03A9F4',  
   },
 });
 
