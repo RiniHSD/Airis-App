@@ -15,7 +15,13 @@ import { setStreamData } from '../config/streamSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function GPSHP() {
-  const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [location, setLocation] = useState({
+    latitude: null,
+    longitude: null,
+    altitude: null,
+    accuracy: null,
+  });
+  
   const webViewRef = useRef(null);
 
   const dispatch = useDispatch();
@@ -39,6 +45,8 @@ export default function GPSHP() {
         const coords = {
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
+          altitude: pos.coords.altitude,
+          accuracy: pos.coords.accuracy,
         };
         setLocation(coords);
         dispatch(setStreamData({ type: 'INTERNAL', data: coords }));
@@ -53,8 +61,10 @@ export default function GPSHP() {
     <ScrollView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.title}>📍 Lokasi dari HP</Text>
-        <Text>Latitude: {location.latitude}</Text>
-        <Text>Longitude: {location.longitude}</Text>
+        <Text>Latitude: {location.latitude !== null ? location.latitude.toFixed(10) : 'Memuat...'}</Text>
+        <Text>Longitude: {location.longitude !== null ? location.longitude.toFixed(10) : 'Memuat...'}</Text>
+        <Text>Altitude : {location.altitude != null ? location.altitude.toFixed(2) + ' m' : '-'}</Text>
+        <Text>Akurasi : {location.accuracy != null ? location.accuracy.toFixed(2) + ' m' : '-'}</Text>
 
         <TouchableOpacity
           style={[styles.scanButton, { marginTop: 20 }]}

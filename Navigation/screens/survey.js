@@ -120,7 +120,7 @@ export default function SurveyPage() {
       <Text>Latitude  : {gnssCoords?.latitude ?? '-'}</Text>
       <Text>Longitude : {gnssCoords?.longitude ?? '-'}</Text>
       <Text>Altitude  : {altitude != null ? `${altitude} m` : '-'}</Text>
-      <Text>Accuracy  : {hdop != null ? `${hdop} m` : '-'}</Text>
+      <Text>Akurasi  : {hdop != null ? `${hdop} m` : '-'}</Text>
     </View>
   );
 
@@ -141,8 +141,11 @@ export default function SurveyPage() {
           <Text style={styles.recordTextSmall}>Rekam</Text>
         </TouchableOpacity>
       </View>
-      <Text>Latitude  : {internalData?.latitude ?? 'Belum tersedia dari GPSHP'}</Text>
-      <Text>Longitude  : {internalData?.longitude ?? 'Belum tersedia dari GPSHP'}</Text>
+      <Text>Latitude  : {internalData?.latitude != null ? internalData.latitude.toFixed(10) : 'Belum tersedia dari GPSHP'}</Text>
+      <Text>Longitude : {internalData?.longitude != null ? internalData.longitude.toFixed(10) : 'Belum tersedia dari GPSHP'}</Text>
+      <Text>Altitude  : {internalData?.altitude != null ? internalData.altitude.toFixed(2) : 'Belum tersedia dari GPSHP'}</Text>
+      <Text>Akurasi : {internalData?.accuracy != null ? internalData.accuracy.toFixed(2) : 'Belum tersedia dari GPSHP'}</Text>
+
     </View>
   );
 

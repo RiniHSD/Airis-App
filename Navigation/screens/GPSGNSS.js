@@ -163,7 +163,6 @@ const App = ({navigation}) => {
     navigation.navigate('KONEKSI WIFI');
   }
   
-
   const ReqConnect = async data => {
     const responseData = await ConnectDevice(data, dispatch);
   };

@@ -107,8 +107,10 @@ const ConnectNTRIP = ({navigation}) => {
             <Text style={styles.ntripInfo}>
               Silahkan beri koneksi internet kepada perangkat GNSS Geodetik dengan menghubungkan WiFi atau Hotspot Mobile Handphone anda.
             </Text>
+            <Text style={styles.ntripInfo}>
+              Proses membutuhkan waktu beberapa detik, mohon menunggu hingga status NTRIP terhubung.
+            </Text>
           </View>
-
         </View>
       </View>
     </ScrollView>
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
-    height: 600,
+    height: 650,
     borderRadius: 10,
     padding: 20,
     paddingTop: 1,
@@ -140,8 +142,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#2196F3',
     textAlign: 'center',
-    marginBottom: 1,
-    marginTop: 10,
+    marginBottom: 7,
+    marginTop: 17,
   },
   inputContainer: {
     marginBottom: 20,
