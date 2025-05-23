@@ -125,7 +125,6 @@ export default function SurveyPage() {
     fetchStoredInternal();
   }, []);
 
-  // const [selectedCoords, setSelectedCoords] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -176,7 +175,7 @@ export default function SurveyPage() {
                 console.log('Gagal mengambil foto:', response.errorMessage);
               } else if (response.assets && response.assets.length > 0) {
                 const uri = response.assets[0].uri;
-                setFormData((prevState) => ({ ...prevState, [name]: uri }));
+                setForm((prevState) => ({ ...prevState, [name]: uri }));
               }
             });
           },
@@ -195,7 +194,7 @@ export default function SurveyPage() {
                 console.log('Gagal memilih gambar:', response.errorMessage);
               } else if (response.assets && response.assets.length > 0) {
                 const uri = response.assets[0].uri;
-                setFormData((prevState) => ({ ...prevState, [name]: uri }));
+                setForm((prevState) => ({ ...prevState, [name]: uri }));
               }
             });
           },
@@ -210,21 +209,13 @@ export default function SurveyPage() {
   };
 
   const renderImage = (imageUri) => {
-    const cleanPath = (path) => {
-      if (path.startsWith("src/")) {
-        return path.replace("src/", "");
-      }
-      return path;
-    };
-  
     if (imageUri) {
-      const cleanedUri = cleanPath(imageUri);
-      return <Image source={{ uri: `${BASE_URL}${cleanedUri}` }} style={styles.imagePreview} />;
+      return <Image source={{ uri: imageUri }} style={styles.imagePreview} />;
     }
   
-    // Tampilkan ikon kamera jika tidak ada gambar
     return <Image source={require('../assets/icons/camera.png')} style={styles.imageIcon} />;
   };
+  
 
   const handleSubmit = async () => {
     const data = {
@@ -496,7 +487,7 @@ export default function SurveyPage() {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Foto Dokumentasi</Text>
           <View style={styles.imageContainer}>
-            <TouchableOpacity onPress={() => handleImagePick('foto')} style={styles.imageUpload} disabled={true}>
+            <TouchableOpacity onPress={() => handleImagePick('foto')} style={styles.imageUpload}>
               {renderImage(form.foto)}
             </TouchableOpacity>
           </View>
@@ -571,10 +562,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 200,
+    with: 200,
   },
   imageUpload: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 6,
@@ -585,11 +580,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  imagePreview: {
+    width: 200,
+    height: 200,
+    borderRadius: 6,
+  },
   inputWithIcon: {
     position: 'relative',
     justifyContent: 'center',
   },
-  
   input: {
     borderWidth: 1,
     borderColor: '#ccc',

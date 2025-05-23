@@ -176,7 +176,6 @@ const styles = StyleSheet.create({
   socialIcons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 15,
   },
   icon: {
     width: 24,
