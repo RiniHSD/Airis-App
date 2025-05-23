@@ -17,7 +17,60 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-date-picker';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import CheckBox from '@react-native-community/checkbox';
+
+
+const CustomRadioButton = ({ label, selected, onSelect }) => (
+  <TouchableOpacity
+    onPress={onSelect}
+    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
+  >
+    <View style={{
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      borderWidth: 1.5,
+      borderColor: '#ccc',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 10,
+    }}>
+      {selected && (
+        <View style={{
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: '#00AEEF',
+        }} />
+      )}
+    </View>
+    <Text>{label}</Text>
+  </TouchableOpacity>
+);
+
+
+const CustomCheckbox = ({ label, checked, onToggle }) => (
+  <TouchableOpacity
+    onPress={onToggle}
+    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
+  >
+    <View style={{
+      width: 20,
+      height: 20,
+      borderWidth: 1.5,
+      borderColor: '#ccc', // warna border abu
+      backgroundColor: checked ? '#00AEEF' : '#fff', // full biru saat dicentang
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 10,
+      borderRadius: 4,
+    }}>
+      {checked && (
+        <Text style={{ color: 'white', fontSize: 14 }}>✓</Text>
+      )}
+    </View>
+    <Text>{label}</Text>
+  </TouchableOpacity>
+);
 
 export default function SurveyPage() {
   const internalCoords = useSelector(state => state.streamData?.streams?.['INTERNAL']);
@@ -48,7 +101,9 @@ export default function SurveyPage() {
   const [selectedLokasi, setSelectedLokasi] = useState('');
   const [isTersier, setIsTersier] = useState(false);
 
-  const finalLokasi = `${selectedLokasi}${isTersier ? ' + Saluran Tersier' : ''}`;
+  const finalLokasi = isTersier
+  ? `Saluran Tersier di ${selectedLokasi}`
+  : selectedLokasi;
 
   const kondisiOptions = ['Baik', 'Rusak ringan', 'Rusak sedang', 'Rusak berat'];
 
@@ -70,17 +125,18 @@ export default function SurveyPage() {
     fetchStoredInternal();
   }, []);
 
-  const [selectedCoords, setSelectedCoords] = useState('');
+  // const [selectedCoords, setSelectedCoords] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+
   const [form, setForm] = useState({
     nama: '',
     jenis: '',
     tanggal: '',
     fungsi: '',
     bahan: '',
-    lokasi: '',
     kondisi: '',
     luasoncoran: '',
-    jeniskebutuhan: '',
     luaskolam: '',
     keterangantambahan: '',
     foto: '',
@@ -173,13 +229,15 @@ export default function SurveyPage() {
   const handleSubmit = async () => {
     const data = {
       ...form,
-      koordinat: selectedCoords,
+      koordinat: `${latitude}, ${longitude}`,
       lokasi: finalLokasi,
       jeniskebutuhan: kebutuhan,
     };
+
+    console.log('Data yang dikirim:', data);
   
     try {
-      const res = await fetch('http://192.168.1.9:3000/api/bangunan_irigasi', {
+      const res = await fetch('http://192.168.1.9:3000/auth/bangunan_irigasi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -202,9 +260,11 @@ export default function SurveyPage() {
           style={styles.recordButtonSmall}
           onPress={() => {
             if (gnssCoords?.latitude && gnssCoords?.longitude) {
-              setSelectedCoords(`${gnssCoords.latitude}, ${gnssCoords.longitude}`);
+              setLatitude(gnssCoords.latitude.toString());
+              setLongitude(gnssCoords.longitude.toString());
             } else {
-              setSelectedCoords('Tidak ada koordinat eksternal');
+              setLatitude('Tidak ada koordinat eksternal');
+              setLongitude('Tidak ada koordinat eksternal');
             }
           }}
         >
@@ -226,9 +286,12 @@ export default function SurveyPage() {
           style={styles.recordButtonSmall}
           onPress={() => {
             if (internalData?.latitude && internalData?.longitude) {
-              setSelectedCoords(`${internalData.latitude}, ${internalData.longitude}`);
+              // setSelectedCoords(`${internalData.latitude}, ${internalData.longitude}`);
+              setLatitude(internalData.latitude.toString());
+              setLongitude(internalData.longitude.toString());
             } else {
-              setSelectedCoords('Tidak ada koordinat internal');
+              setLatitude('Tidak ada koordinat internal');
+              setLongitude('Tidak ada koordinat internal');
             }
           }}
         >
@@ -250,7 +313,7 @@ export default function SurveyPage() {
 
       <View style={styles.form}>
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Nama Bangunan *</Text>
+          <Text style={styles.label}>Nama Bangunan</Text>
           <TextInput
             style={styles.input}
             placeholder="Contoh: BSP.7"
@@ -262,7 +325,7 @@ export default function SurveyPage() {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Jenis Bangunan *</Text>
+          <Text style={styles.label}>Jenis Bangunan</Text>
           <TextInput
             style={styles.input}
             placeholder="Contoh: Bangunan Sadap"
@@ -275,16 +338,32 @@ export default function SurveyPage() {
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Koordinat</Text>
-          <TextInput
-            style={styles.input}
-            value={selectedCoords}
-            backgroundColor="white"
-            onChangeText={v => setSelectedCoords(v)}
-          />
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <Text style={{ width: 80 }}>Latitude:</Text>
+            <TextInput
+              style={[styles.input, { flex: 1 }]}
+              value={latitude}
+              keyboardType="numeric"
+              onChangeText={setLatitude}
+              editable={false}
+            />
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ width: 80 }}>Longitude:</Text>
+            <TextInput
+              style={[styles.input, { flex: 1 }]}
+              value={longitude}
+              keyboardType="numeric"
+              onChangeText={setLongitude}
+              editable={false}
+            />
+          </View>
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Tanggal Update *</Text>
+          <Text style={styles.label}>Tanggal Update</Text>
           <TouchableOpacity onPress={() => setOpen(true)}>
             <View style={styles.inputWithIcon}>
               <TextInput
@@ -313,94 +392,118 @@ export default function SurveyPage() {
           onCancel={() => setOpen(false)}
         />
 
-        <Text style={styles.label}>Fungsi Bangunan</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: mengalirkan air ke kolam"
-          placeholderTextColor="#999"
-          value={form.fungsi}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, fungsi: v })}
-        />
-
-        <Text style={styles.label}>Bahan Bangunan</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: beton, kayu, dll"
-          placeholderTextColor="#999"
-          value={form.bahan}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, bahan: v })}
-        />
-
-        <Text style={styles.label}>Lokasi Bangunan</Text>
-
-        {saluranList.map(s => (
-          <TouchableOpacity key={s} onPress={() => setSelectedLokasi(s)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <CheckBox value={selectedLokasi === s} onValueChange={() => setSelectedLokasi(s)} />
-            <Text>{s}</Text>
-          </TouchableOpacity>
-        ))}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <CheckBox value={isTersier} onValueChange={setIsTersier} />
-          <Text>Saluran Tersier</Text>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Fungsi Bangunan</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contoh: mengalirkan air ke kolam"
+            placeholderTextColor="#999"
+            value={form.fungsi}
+            backgroundColor="white"
+            onChangeText={v => setForm({ ...form, fungsi: v })}
+          />
         </View>
 
-        <Text style={styles.label}>Kondisi Fisik</Text>
-        {kondisiOptions.map(kondisi => (
-          <TouchableOpacity key={kondisi} onPress={() => setForm({ ...form, kondisi })}>
-            <Text style={{ fontWeight: form.kondisi === kondisi ? 'bold' : 'normal' }}>{kondisi}</Text>
-          </TouchableOpacity>
-        ))}
-
-        <Text style={styles.label}>Jenis Kebutuhan</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: beton, kayu, dll"
-          placeholderTextColor="#999"
-          value={form.bahan}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, bahan: v })}
-        />
-
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <CheckBox value={isSawah} onValueChange={setIsSawah} />
-          <Text>Persawahan</Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <CheckBox value={isKolam} onValueChange={setIsKolam} />
-          <Text>Kolam</Text>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Bahan Bangunan</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Contoh: beton, kayu, dll"
+              placeholderTextColor="#999"
+              value={form.bahan}
+              backgroundColor="white"
+              onChangeText={v => setForm({ ...form, bahan: v })}
+            />
         </View>
 
-        <Text style={styles.label}>Luas Kolam</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: beton, kayu, dll"
-          placeholderTextColor="#999"
-          value={form.bahan}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, bahan: v })}
-        />
-
-        <Text style={styles.label}>Keterangan Tambahan</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: beton, kayu, dll"
-          placeholderTextColor="#999"
-          value={form.bahan}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, bahan: v })}
-        />
-
-        <Text style={styles.label}>Foto Dokumentasi</Text>
-        <View style={styles.imageContainer}>
-          <TouchableOpacity onPress={() => handleImagePick('foto')} style={styles.imageUpload} disabled={true}>
-            {renderImage(form.foto)}
-          </TouchableOpacity>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Lokasi Bangunan</Text>
+          {saluranList.map(s => (
+            <CustomRadioButton
+              key={s}
+              label={s}
+              selected={selectedLokasi === s}
+              onSelect={() => setSelectedLokasi(s)}
+            />
+          ))}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <CustomCheckbox
+            label="Saluran Tersier"
+            checked={isTersier}
+            onToggle={() => setIsTersier(!isTersier)}
+          />
+          </View>
         </View>
 
-        <TouchableOpacity onPress={handleSubmit} style={{ marginTop: 20, backgroundColor: 'blue', padding: 10 }}>
-          <Text style={{ color: 'white' }}>SAVE</Text>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Kondisi Fisik</Text>
+          {kondisiOptions.map(kondisi => (
+            <CustomRadioButton
+              key={kondisi}
+              label={kondisi}
+              selected={form.kondisi === kondisi}
+              onSelect={() => setForm({ ...form, kondisi })}
+            />
+          ))}
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Luas Oncoran</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contoh: 2978.45 Ha"
+            placeholderTextColor="#999"
+            value={form.luasoncoran}
+            backgroundColor="white"
+            onChangeText={v => setForm({ ...form, luasoncoran: v })}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Jenis Kebutuhan</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <CustomCheckbox label="Persawahan" checked={isSawah} onToggle={() => setIsSawah(!isSawah)} />
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <CustomCheckbox label="Kolam" checked={isKolam} onToggle={() => setIsKolam(!isKolam)} />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Luas Kolam</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contoh: 2978.45 Ha"
+            placeholderTextColor="#999"
+            value={form.luaskolam}
+            backgroundColor="white"
+            onChangeText={v => setForm({ ...form, luaskolam: v })}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Keterangan Tambahan</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contoh: bangunan tertutup semak"
+            placeholderTextColor="#999"
+            value={form.keterangantambahan}
+            backgroundColor="white"
+            onChangeText={v => setForm({ ...form, keterangantambahan: v })}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Foto Dokumentasi</Text>
+          <View style={styles.imageContainer}>
+            <TouchableOpacity onPress={() => handleImagePick('foto')} style={styles.imageUpload} disabled={true}>
+              {renderImage(form.foto)}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <TouchableOpacity onPress={handleSubmit} style={{ marginTop: 20, backgroundColor: '#00AEEF', padding: 10 }}>
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>SIMPAN</Text>
         </TouchableOpacity>
         
       </View>
@@ -461,7 +564,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 6,
-    padding: 10,
+    padding: 15,
     backgroundColor: '#fff',
   },
   imageContainer: {
