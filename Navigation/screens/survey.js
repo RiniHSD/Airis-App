@@ -50,6 +50,16 @@ export default function SurveyPage() {
 
   const finalLokasi = `${selectedLokasi}${isTersier ? ' + Saluran Tersier' : ''}`;
 
+  const kondisiOptions = ['Baik', 'Rusak ringan', 'Rusak sedang', 'Rusak berat'];
+
+  const [isSawah, setIsSawah] = useState(false);
+  const [isKolam, setIsKolam] = useState(false);
+
+  const kebutuhan = [
+    isSawah ? 'Persawahan' : null,
+    isKolam ? 'Kolam' : null,
+  ].filter(Boolean).join(', ');
+
   useEffect(() => {
     const fetchStoredInternal = async () => {
       const saved = await AsyncStorage.getItem('internal_coords');
@@ -160,6 +170,30 @@ export default function SurveyPage() {
     return <Image source={require('../assets/icons/camera.png')} style={styles.imageIcon} />;
   };
 
+  const handleSubmit = async () => {
+    const data = {
+      ...form,
+      koordinat: selectedCoords,
+      lokasi: finalLokasi,
+      jeniskebutuhan: kebutuhan,
+    };
+  
+    try {
+      const res = await fetch('http://192.168.1.9:3000/api/bangunan_irigasi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Gagal menyimpan data');
+      Alert.alert('Sukses', 'Data berhasil disimpan');
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    }
+  };
+  
+
   const renderCardEksternal = () => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -215,45 +249,56 @@ export default function SurveyPage() {
       {renderCardInternal()}
 
       <View style={styles.form}>
-        <Text style={styles.label}>Nama Bangunan *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: BSP.7"
-          placeholderTextColor="#999"
-          value={form.nama}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, nama: v })}
-        />
-
-        <Text style={styles.label}>Jenis Bangunan *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: Bangunan Sadap"
-          placeholderTextColor="#999"
-          value={form.jenis}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, jenis: v })}
-        />
-
-        <Text style={styles.label}>Koordinat</Text>
-        <TextInput
-          style={styles.input}
-          value={selectedCoords}
-          backgroundColor="white"
-          onChangeText={v => setSelectedCoords(v)}
-        />
-
-        <Text style={styles.label}>Tanggal Update *</Text>
-        <TouchableOpacity onPress={() => setOpen(true)}>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Nama Bangunan *</Text>
           <TextInput
             style={styles.input}
-            value={form.tanggal}
-            editable={false}
-            placeholder="YYYY-MM-DD"
+            placeholder="Contoh: BSP.7"
+            placeholderTextColor="#999"
+            value={form.nama}
             backgroundColor="white"
+            onChangeText={v => setForm({ ...form, nama: v })}
           />
-          <Image source={require('../assets/icons/calender.png')} style={styles.icon} />
-        </TouchableOpacity>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Jenis Bangunan *</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contoh: Bangunan Sadap"
+            placeholderTextColor="#999"
+            value={form.jenis}
+            backgroundColor="white"
+            onChangeText={v => setForm({ ...form, jenis: v })}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Koordinat</Text>
+          <TextInput
+            style={styles.input}
+            value={selectedCoords}
+            backgroundColor="white"
+            onChangeText={v => setSelectedCoords(v)}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Tanggal Update *</Text>
+          <TouchableOpacity onPress={() => setOpen(true)}>
+            <View style={styles.inputWithIcon}>
+              <TextInput
+                style={styles.input}
+                value={form.tanggal}
+                editable={false}
+                placeholder="YYYY-MM-DD"
+                placeholderTextColor="#999"
+                pointerEvents="none"
+              />
+              <Image source={require('../assets/icons/calender.png')} style={styles.icon} />
+            </View>
+          </TouchableOpacity>
+        </View>
 
         <DatePicker
           modal
@@ -302,14 +347,11 @@ export default function SurveyPage() {
         </View>
 
         <Text style={styles.label}>Kondisi Fisik</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: beton, kayu, dll"
-          placeholderTextColor="#999"
-          value={form.bahan}
-          backgroundColor="white"
-          onChangeText={v => setForm({ ...form, bahan: v })}
-        />
+        {kondisiOptions.map(kondisi => (
+          <TouchableOpacity key={kondisi} onPress={() => setForm({ ...form, kondisi })}>
+            <Text style={{ fontWeight: form.kondisi === kondisi ? 'bold' : 'normal' }}>{kondisi}</Text>
+          </TouchableOpacity>
+        ))}
 
         <Text style={styles.label}>Jenis Kebutuhan</Text>
         <TextInput
@@ -320,6 +362,15 @@ export default function SurveyPage() {
           backgroundColor="white"
           onChangeText={v => setForm({ ...form, bahan: v })}
         />
+
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <CheckBox value={isSawah} onValueChange={setIsSawah} />
+          <Text>Persawahan</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <CheckBox value={isKolam} onValueChange={setIsKolam} />
+          <Text>Kolam</Text>
+        </View>
 
         <Text style={styles.label}>Luas Kolam</Text>
         <TextInput
@@ -341,13 +392,16 @@ export default function SurveyPage() {
           onChangeText={v => setForm({ ...form, bahan: v })}
         />
 
-
         <Text style={styles.label}>Foto Dokumentasi</Text>
         <View style={styles.imageContainer}>
           <TouchableOpacity onPress={() => handleImagePick('foto')} style={styles.imageUpload} disabled={true}>
             {renderImage(form.foto)}
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity onPress={handleSubmit} style={{ marginTop: 20, backgroundColor: 'blue', padding: 10 }}>
+          <Text style={{ color: 'white' }}>SAVE</Text>
+        </TouchableOpacity>
         
       </View>
     </ScrollView>
@@ -395,12 +449,20 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: '600',
+    marginBottom: 10,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 6,
     padding: 8,
+  },
+  formGroup: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   imageContainer: {
     flexDirection: 'row',
@@ -419,5 +481,26 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  inputWithIcon: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    paddingRight: 35, // beri ruang untuk icon
+    backgroundColor: '#fff',
+    color: 'black',
+  },
+  icon: {
+    position: 'absolute',
+    right: 10,
+    width: 20,
+    height: 20,
+    tintColor: 'gray',
   },
 });
