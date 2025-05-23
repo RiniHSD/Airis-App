@@ -9,9 +9,10 @@ export default function Register({ navigation }) {
   const [telp, setTelp] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [namaIrigasi, setNamaIrigasi] = useState('');
 
   const handleRegister = async () => {
-    if (!name || !email || !telp || !password || !confirmPassword) {
+    if (!name || !email || !telp || !password || !confirmPassword || !namaIrigasi) {
       Alert.alert('Error', 'Semua field harus diisi.');
       return;
     }
@@ -20,13 +21,13 @@ export default function Register({ navigation }) {
       return;
     }
 
-    console.log('Data yang dikirim:', { name, email, telp, password })
+    console.log('Data yang dikirim:', { name, email, telp, password, namaIrigasi })
     
     try {
-      const res = await fetch('http://192.168.1.6:3000/auth/register', {
+      const res = await fetch('http://192.168.1.9:3000/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, email, telp, password })
+        body: JSON.stringify({ name, email, telp, password, namaIrigasi })
       });
 
       const data = await res.json();
@@ -39,7 +40,7 @@ export default function Register({ navigation }) {
       Alert.alert('Success', 'Registrasi berhasil.');
       navigation.navigate('Login');
     } catch (error) {
-      console.error('Error saat register:', err);
+      console.error('Error saat register:', error);
       Alert.alert('Error', error.message);
     }
   };
@@ -47,14 +48,14 @@ export default function Register({ navigation }) {
   return (
     <View style={styles.container}>
       <Image source={require('../assets/icons/Icon.png')} style={styles.logo} />
-      <Text style={styles.title}>HYDROGIS</Text>
+      <Text style={styles.title}>AIRIS APP</Text>
 
       <View style={styles.formContainer}>
         <Text>Nama Lengkap</Text>
         <TextInput
           style={styles.input}
           placeholder="Masukkan Nama Lengkap"
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           value={name}
           onChangeText={setName}
         />
@@ -63,7 +64,7 @@ export default function Register({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Masukkan Email"
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -75,7 +76,7 @@ export default function Register({ navigation }) {
           style={styles.input}
           placeholder="Masukkan No Telp"
           keyboardType="phone-pad"
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           value={telp}
           onChangeText={setTelp}
         />
@@ -85,7 +86,7 @@ export default function Register({ navigation }) {
           style={styles.input}
           placeholder="Masukkan Kata Sandi"
           secureTextEntry
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           value={password}
           onChangeText={setPassword}
         />
@@ -95,9 +96,18 @@ export default function Register({ navigation }) {
           style={styles.input}
           placeholder="Ulangi Kata Sandi"
           secureTextEntry
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
+        />
+
+        <Text>Nama Daerah Irigasi</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Contoh: Van Der Wijck"
+          placeholderTextColor="#a6a8ab"
+          value={namaIrigasi}
+          onChangeText={setNamaIrigasi}
         />
       </View>
 

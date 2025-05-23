@@ -41,7 +41,7 @@ const ICONS = {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function MainTabs({ navigation }) {
+function MainTabs({ navigation, onLogout }) {
   const handleLogout = async () => {
     await AsyncStorage.removeItem('isLoggedIn');
     navigation.replace('Login');
@@ -78,7 +78,9 @@ function MainTabs({ navigation }) {
         <Tab.Screen name="Map" component={MapPage} />
         <Tab.Screen name="Survey" component={SurveyPage} />
         <Tab.Screen name="List" component={ListPage} />
-        <Tab.Screen name="User" component={AccountPage} />
+        <Tab.Screen name="User">
+          {(props) => <AccountPage {...props} onLogout={onLogout} />}
+        </Tab.Screen>
       </Tab.Navigator>
   );
 }

@@ -7,38 +7,39 @@ export default function Login({ navigation, onLogin }) {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        if (!email || !password) {
-            Alert.alert('Error', 'Email dan kata sandi harus diisi.');
-            return;
-        }
-        
-        try {
-            const response = await fetch('http://10.33.76.48:3000/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-            console.log('Respon backend:', data);
-
-            if (!response.ok) {
+      if (!email || !password) {
+          Alert.alert('Error', 'Email dan kata sandi harus diisi.');
+          return;
+      }
+      
+      try {
+          const response = await fetch('http://192.168.10.196:3000/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+          });
+  
+          const data = await response.json();
+          console.log('Respon backend:', data);
+  
+          if (!response.ok) {
               throw new Error(data.error || 'Login gagal');
-            }
-
-            await AsyncStorage.setItem('isLoggedIn', 'true');
-            await AsyncStorage.setItem('user', JSON.stringify(data));
-            onLogin();
-        } catch (error) {
+          }
+  
+          await AsyncStorage.setItem('isLoggedIn', 'true');
+          await AsyncStorage.setItem('userId', String(data.user.id)); // <- Tambahan di sini
+          onLogin(); // panggil fungsi setelah login berhasil (mungkin untuk navigasi ke home)
+      } catch (error) {
           console.error('Error saat login:', error);
           Alert.alert('Login Gagal', error.message);
-        }
-    };
+      }
+  };
+  
 
     return (
     <View style={styles.container}>
         <Image source={require('../assets/icons/Icon.png')} style={styles.logo} />
-        <Text style={styles.title}>HYDROGIS</Text>
+        <Text style={styles.title}>AIRIS APP</Text>
 
     <View style={styles.formContainer}>
         <Text>Email</Text>

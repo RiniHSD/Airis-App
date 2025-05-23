@@ -1,23 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Linking, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
-export default function AccountPage({ navigation }) {
+export default function AccountPage({ navigation, onLogout  }) {
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
+    nama_irigasi: '',
   });
 
+  
+
   useEffect(() => {
-    const getUser = async () => {
-      const userString = await AsyncStorage.getItem('user');
-      if (userString) {
-        const user = JSON.parse(userString);
-        setUserInfo(user);
+    const fetchUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        console.log('USER ID:', userId);
+
+        const res = await fetch(`http://192.168.10.196:3000/auth/user/${userId}`);
+
+        if (!res.ok) {
+          console.log('Status:', res.status);
+          throw new Error('Gagal mengambil data pengguna');
+        }
+
+        const data = await res.json();
+        console.log('DATA DARI SERVER:', data);
+
+        setUserInfo({
+          name: data.name,
+          email: data.email,
+          nama_irigasi: data.nama_irigasi,
+        });
+      } catch (error) {
+        console.error('GAGAL FETCH USER:', error.message);
+        Alert.alert('Error', 'Tidak bisa mengambil data pengguna');
       }
     };
-    getUser();
+
+    fetchUser();
   }, []);
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -34,8 +58,24 @@ export default function AccountPage({ navigation }) {
         >
           {userInfo.email}
         </Text>
+        <Text style={styles.label}>Nama Daerah Irigasi:</Text>
+        <Text style={styles.value}>{userInfo.nama_irigasi}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'Konfirmasi Logout',
+              'Yakin ingin keluar dari aplikasi?',
+              [
+                { text: 'Batal', style: 'cancel' },
+                { text: 'Keluar', style: 'destructive', onPress: onLogout },
+              ],
+              { cancelable: true }
+            );
+          }}
+        >
+          <Image source={require('../assets/icons/logout.png')} style={styles.icon} />
+        </TouchableOpacity>
 
-        <Image source={require('../assets/icons/logout.png')} style={styles.icon} />
       </View>
 
       <View style={styles.box}>
@@ -67,7 +107,6 @@ export default function AccountPage({ navigation }) {
 
         <View style={styles.socialIcons}>
           {[
-            { url: 'mailto:rinihusadiyah@gmail.com', icon: require('../assets/icons/email.png') },
             { url: 'https://www.linkedin.com/in/rinihusadiyah/', icon: require('../assets/icons/linkedin.png') },
           ].map((item, index) => (
             <TouchableOpacity key={index} onPress={() => Linking.openURL(item.url)}>
