@@ -228,7 +228,7 @@ export default function SurveyPage() {
     console.log('Data yang dikirim:', data);
   
     try {
-      const res = await fetch('http://192.168.1.9:3000/auth/bangunan_irigasi', {
+      const res = await fetch('http://192.168.1.9:3000/auth/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

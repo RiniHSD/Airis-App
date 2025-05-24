@@ -79,6 +79,7 @@ export async function loginUser(req, res) {
   }
 }
 
+// Get user
 export async function getUser(req, res) {
   const { userId } = req.params;
 
@@ -98,5 +99,46 @@ export async function getUser(req, res) {
     res.status(500).json({ error: 'Gagal mengambil data pengguna. ' + err.message });
   }
 }
+
+// Submit data
+export async function submitData(req, res) {
+    const {
+      nama, jenis, tanggal, fungsi, bahan, lokasi,
+      kondisi, luasoncoran, luaskolam, jeniskebutuhan,
+      keterangantambahan, koordinat, foto
+    } = req.body;
+  
+    try {
+      // Ambil id_saluran berdasarkan nama saluran
+      const saluranRes = await pool.query(
+        `SELECT id FROM saluran_irigasi WHERE nama_saluran = $1`,
+        [lokasi]
+      );
+  
+      if (saluranRes.rows.length === 0) {
+        return res.status(400).json({ error: 'Saluran tidak ditemukan di database' });
+      }
+  
+      const id_saluran = saluranRes.rows[0].id;
+  
+      await pool.query(`
+        INSERT INTO bangunan_irigasi (
+          nama, jenis, tanggal, fungsi, bahan, lokasi, kondisi,
+          luasoncoran, luaskolam, jeniskebutuhan, keterangantambahan,
+          koordinat, foto, id_saluran
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      `, [
+        nama, jenis, tanggal, fungsi, bahan, lokasi, kondisi,
+        luasoncoran, luaskolam, jeniskebutuhan, keterangantambahan,
+        koordinat, foto, id_saluran
+      ]);
+  
+      res.status(201).json({ message: 'Data bangunan irigasi berhasil disimpan' });
+  
+    } catch (err) {
+      console.error('Error insert bangunan_irigasi:', err.message);
+      res.status(500).json({ error: 'Gagal menyimpan data bangunan irigasi' });
+    }
+};
 
 
