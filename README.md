@@ -89,7 +89,17 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
    ```bash
    npx react-native run-android
 
-4. Pastikan GNSS Low Cost aktif dan Bluetooth diaktifkan di perangkat.
+4. Jika error saat menjalankan aplikasi, coba untuk membersihkan chace terlebih dahulu
+   ```bash
+   cd android
+   ./gradlew clea
+   
+5. Coba jalankan kembali aplikasi di emulator atau perangkat Android
+   ```bash
+   cd ../
+   npx react-native run-android
+
+6. Pastikan GNSS Low Cost menyala dan Bluetooth diaktifkan di perangkat.
 
 
 ## 👩‍💻 Developer
