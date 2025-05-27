@@ -92,7 +92,7 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
 4. Jika error saat menjalankan aplikasi, coba untuk membersihkan chace terlebih dahulu
    ```bash
    cd android
-   ./gradlew clea
+   ./gradlew clean
    
 5. Coba jalankan kembali aplikasi di emulator atau perangkat Android
    ```bash
