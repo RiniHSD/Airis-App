@@ -437,7 +437,7 @@ export default function SurveyPage() {
     console.log('Data yang dikirim:', data);
   
     try {
-      const res = await fetch('https://airisapp.vercel.app/auth/submit', {
+      const res = await fetch('https://backend-airis-app.vercel.app/auth/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

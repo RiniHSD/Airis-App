@@ -13,7 +13,7 @@ export default function Login({ navigation, onLogin }) {
       }
       
       try {
-          const response = await fetch('https://airisapp.vercel.app/auth/login', {
+          const response = await fetch('https://backend-airis-app.vercel.app/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email, password })

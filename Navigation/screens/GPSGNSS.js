@@ -135,7 +135,7 @@ const App = ({navigation}) => {
   const RequestScan = async () => {
     setbluetoothReady(true);
     try {
-      window.alert('start scaan');
+      window.alert('Memulai Pemindaian Perangkat Bluetooth...');
       const searchDevices = await SearchDevice();
       if(!searchDevices.error){
         addPairedDevice(searchDevices);

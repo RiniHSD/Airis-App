@@ -18,7 +18,7 @@ export default function AccountPage({ navigation, onLogout  }) {
         const userId = await AsyncStorage.getItem('userId');
         console.log('USER ID:', userId);
 
-        const res = await fetch(`https://airisapp.vercel.app/auth/user/${userId}`);
+        const res = await fetch(`https://backend-airis-app.vercel.app/auth/user/${userId}`);
 
         if (!res.ok) {
           console.log('Status:', res.status);
