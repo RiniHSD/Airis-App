@@ -24,7 +24,7 @@ export default function Register({ navigation }) {
     console.log('Data yang dikirim:', { name, email, telp, password, namaIrigasi })
     
     try {
-      const res = await fetch('http://192.168.1.9:3000/auth/register', {
+      const res = await fetch('https://airisapp.vercel.app/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ name, email, telp, password, namaIrigasi })

@@ -6,8 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  PermissionsAndroid,
-  Platform,
   Alert,
   Image
 } from 'react-native';
@@ -15,8 +13,10 @@ import { useSelector } from 'react-redux';
 import { CoordinateConverter, extractGGAInfo } from '../Helpers/geo_helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-date-picker';
-import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { selectStreamData } from '../config/streamSlice';
+import { Picker } from '@react-native-picker/picker';
+import CustomPicker from '../assets/CustomPicker';
 
 
 const CustomRadioButton = ({ label, selected, onSelect }) => (
@@ -73,8 +73,8 @@ const CustomCheckbox = ({ label, checked, onToggle }) => (
 );
 
 export default function SurveyPage() {
-  const internalCoords = useSelector(state => state.streamData?.streams?.['INTERNAL']);
-  const streamDataGNGGA = useSelector(state => state.streamData?.streams?.['GNGGA']);
+  const internalCoords = useSelector(state => selectStreamData(state, 'INTERNAL'));
+  const streamDataGNGGA = useSelector(state => selectStreamData(state, 'GNGGA'));
   const [internalBackup, setInternalBackup] = useState(null);
   const internalData = internalCoords ?? internalBackup;
 
@@ -85,7 +85,7 @@ export default function SurveyPage() {
     'Saluran Primer Van Der Wijck',
     'Sekunder Cerbonan Kulon',
     'Sekunder Cerbonan Wetan',
-    'Sekunder Gancahan', 
+    'Sekunder Gencahan', 
     'Sekunder Jamur Kulon', 
     'Sekunder Jamur Wetan', 
     'Sekunder Kergan', 
@@ -96,6 +96,7 @@ export default function SurveyPage() {
     'Sekunder Sedayu Rewulu', 
     'Sekunder Sedayu Selatan', 
     'Sekunder Sendang Pitu',
+    'Sekunder Brongkol',
   ];
 
   const [selectedLokasi, setSelectedLokasi] = useState('');
@@ -109,11 +110,41 @@ export default function SurveyPage() {
 
   const [isSawah, setIsSawah] = useState(false);
   const [isKolam, setIsKolam] = useState(false);
+  const [isKebun, setIsKebun] = useState(false);
 
   const kebutuhan = [
     isSawah ? 'Persawahan' : null,
     isKolam ? 'Kolam' : null,
+    isKebun ? 'Perkebunan' : null
   ].filter(Boolean).join(', ');
+
+  // Di Survey.js, tambahkan useEffect untuk mendengarkan perubahan
+  useEffect(() => {
+    const handleInternalUpdate = async () => {
+      // Dapatkan data terbaru dari Redux
+      const currentInternal = useSelector(state => state.streamData?.streams?.['INTERNAL']);
+      
+      // Juga periksa AsyncStorage sebagai fallback
+      const saved = await AsyncStorage.getItem('internal_coords');
+      const storedInternal = saved ? JSON.parse(saved) : null;
+      
+      // Prioritaskan data dari Redux, fallback ke AsyncStorage
+      setInternalBackup(currentInternal || storedInternal);
+      
+      console.log('[Survey] Internal coords updated:', currentInternal || storedInternal);
+    };
+
+    const loadBackup = async () => {
+      if (!internalCoords) {
+        const saved = await AsyncStorage.getItem('internal_coords');
+        if (saved) {
+          setInternalBackup(JSON.parse(saved));
+        }
+      }
+    };
+    loadBackup();
+    handleInternalUpdate();
+  }, [internalCoords]); // Jalankan ulang ketika internalCoords berubah
 
   useEffect(() => {
     const fetchStoredInternal = async () => {
@@ -137,9 +168,175 @@ export default function SurveyPage() {
     kondisi: '',
     luasoncoran: '',
     luaskolam: '',
+    luassawah: '',
+    luaskebun: '',
     keterangantambahan: '',
     foto: '',
   });
+
+  const namaBangunanOptions = [
+    'Bangunan Intake',
+    'Bangunan Penguras',
+    'Mercu Bendung',
+    'Bangunan Bagi',
+    'Bangunan Sadap',
+    'Lainnya'
+  ];
+
+  const [isBangunanBagi, setIsBangunanBagi] = useState(false);
+  const [saluranBagi, setSaluranBagi] = useState([
+    {
+      namaSaluran: '',
+      luasoncoran: '',
+      luassawah: '',
+      luaskolam: '',
+      luaskebun: '',
+    }
+  ]);
+  
+  useEffect(() => {
+    setIsBangunanBagi(form.jenis === 'Bangunan Bagi');
+  }), [form.jenis];
+
+  const tambahSaluranBagi = () => {
+    setSaluranBagi([...saluranBagi, {
+      namaSaluran: '',
+      luasoncoran: '',
+      luassawah: '',
+      luaskolam: '',
+      luaskebun: '',
+    }]);
+  };
+
+  const hapusSaluranBagi = (index) => {
+    const newSaluran = [...saluranBagi];
+    newSaluran.splice(index, 1);
+    setSaluranBagi(newSaluran);
+  };
+
+  const updateSaluranBagi = (index, field, value) => {
+    const newSaluran = [...saluranBagi];
+    newSaluran[index][field] = value;
+    setSaluranBagi(newSaluran);
+  };
+
+  const renderBangunanBagiForm = () => {
+    if (!isBangunanBagi) return null;
+
+    return (
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Informasi Pembagian Air</Text>
+        {saluranBagi.map((saluran, index) => (
+          <View key={index} style={styles.saluranContainer}>
+            <Text style={styles.saluranTitle}>Saluran {index + 1}</Text>
+            
+            <Text style={styles.label}>Nama Saluran</Text>
+            <CustomPicker
+              selectedValue={saluran.namaSaluran}
+              onValueChange={(itemValue) => 
+                updateSaluranBagi(index, 'namaSaluran', itemValue)
+              }
+            >
+              <Picker.Item label="Pilih Saluran" value="" />
+              {saluranList.map((item) => (
+                <Picker.Item key={item} label={item} value={item} />
+              ))}
+            </CustomPicker>
+
+            <Text style={styles.label}>Luas Oncoran (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={saluran.luasoncoran}
+              keyboardType="numeric"
+              onChangeText={(v) => updateSaluranBagi(index, 'luasoncoran', v)}
+            />
+
+            <Text style={styles.label}>Luas Persawahan (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={saluran.luassawah}
+              keyboardType="numeric"
+              onChangeText={(v) => updateSaluranBagi(index, 'luassawah', v)}
+            />
+
+            <Text style={styles.label}>Luas Kolam (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={saluran.luaskolam}
+              keyboardType="numeric"
+              onChangeText={(v) => updateSaluranBagi(index, 'luaskolam', v)}
+            />
+
+            <Text style={styles.label}>Luas Perkebunan (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={saluran.luaskebun}
+              keyboardType="numeric"
+              onChangeText={(v) => updateSaluranBagi(index, 'luaskebun', v)}
+            />
+
+            {saluranBagi.length > 1 && (
+              <TouchableOpacity 
+                style={styles.hapusButton}
+                onPress={() => hapusSaluranBagi(index)}
+              >
+                <Text style={styles.hapusButtonText}>Hapus Saluran</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ))}
+
+        <TouchableOpacity 
+          style={styles.tambahButton}
+          onPress={tambahSaluranBagi}
+        >
+          <Text style={styles.tambahButtonText}>Tambah Saluran</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderNamaBangunanForm = () => (
+    <View style={styles.formGroup}>
+      <Text style={styles.label}>Nama Bangunan</Text>
+      <CustomPicker
+        selectedValue={form.jenis}
+        prompt="Pilih jenis bangunan"
+        onValueChange={(itemValue) => setForm({...form, jenis: itemValue})}
+      >
+        {namaBangunanOptions.map((item) => (
+          <Picker.Item key={item} label={item} value={item} />
+        ))}
+      </CustomPicker>
+
+      {form.jenis === 'Lainnya' && (
+        <>
+          <Text style={styles.label}>Nama Bangunan Lainnya</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Masukkan nama bangunan"
+            value={form.jenisLainnya}
+            onChangeText={(v) => setForm({...form, jenisLainnya: v})}
+          />
+        </>
+      )}
+    </View>
+  );
+
+  const renderKondisiFisikForm = () => (
+    <View style={styles.formGroup}>
+      <Text style={styles.label}>Kondisi Fisik</Text>
+      <CustomPicker
+        selectedValue={form.kondisi}
+        prompt="Pilih kondisi fisik"
+        onValueChange={(itemValue) => setForm({...form, kondisi: itemValue})}
+      >
+        {kondisiOptions.map((item) => (
+          <Picker.Item key={item} label={item} value={item} />
+        ))}
+      </CustomPicker>
+    </View>
+  );
   
   let gnssCoords = null;
   let altitude = null;
@@ -216,19 +413,31 @@ export default function SurveyPage() {
     return <Image source={require('../assets/icons/camera.png')} style={styles.imageIcon} />;
   };
   
-
   const handleSubmit = async () => {
+
+    let id_user = null;
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      id_user = parseInt(userId, 10); // jika kamu simpan sebagai string
+    } catch (err) {
+      console.error('Gagal mengambil userId dari AsyncStorage:', err.message);
+      Alert.alert('Error', 'Gagal mengambil informasi pengguna.');
+      return;
+    }
     const data = {
       ...form,
       koordinat: `${latitude}, ${longitude}`,
       lokasi: finalLokasi,
       jeniskebutuhan: kebutuhan,
+      id_user,
+      luassawah: form.luassawah,
+      luaskebun: form.luaskebun
     };
 
     console.log('Data yang dikirim:', data);
   
     try {
-      const res = await fetch('http://192.168.1.9:3000/auth/submit', {
+      const res = await fetch('https://airisapp.vercel.app/auth/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -293,7 +502,6 @@ export default function SurveyPage() {
       <Text>Longitude : {internalData?.longitude != null ? internalData.longitude.toFixed(10) : 'Belum tersedia dari GPSHP'}</Text>
       <Text>Altitude  : {internalData?.altitude != null ? internalData.altitude.toFixed(2) + ' m' : 'Belum tersedia dari GPSHP'}</Text>
       <Text>Akurasi : {internalData?.accuracy != null ? internalData.accuracy.toFixed(2) + ' m' : 'Belum tersedia dari GPSHP'}</Text>
-
     </View>
   );
 
@@ -304,7 +512,7 @@ export default function SurveyPage() {
 
       <View style={styles.form}>
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Nama Bangunan</Text>
+          <Text style={styles.label}>Kode Bangunan</Text>
           <TextInput
             style={styles.input}
             placeholder="Contoh: BSP.7"
@@ -315,17 +523,7 @@ export default function SurveyPage() {
           />
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Jenis Bangunan</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Contoh: Bangunan Sadap"
-            placeholderTextColor="#999"
-            value={form.jenis}
-            backgroundColor="white"
-            onChangeText={v => setForm({ ...form, jenis: v })}
-          />
-        </View>
+        {renderNamaBangunanForm()}
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Koordinat</Text>
@@ -426,23 +624,13 @@ export default function SurveyPage() {
           </View>
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Kondisi Fisik</Text>
-          {kondisiOptions.map(kondisi => (
-            <CustomRadioButton
-              key={kondisi}
-              label={kondisi}
-              selected={form.kondisi === kondisi}
-              onSelect={() => setForm({ ...form, kondisi })}
-            />
-          ))}
-        </View>
+        {renderKondisiFisikForm()}
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Luas Oncoran</Text>
+          <Text style={styles.label}>Luas Oncoran (Ha)</Text>
           <TextInput
             style={styles.input}
-            placeholder="Contoh: 2978.45 Ha"
+            keyboardType="numeric"
             placeholderTextColor="#999"
             value={form.luasoncoran}
             backgroundColor="white"
@@ -458,19 +646,51 @@ export default function SurveyPage() {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <CustomCheckbox label="Kolam" checked={isKolam} onToggle={() => setIsKolam(!isKolam)} />
           </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <CustomCheckbox label="Perkebunan" checked={isKebun} onToggle={() => setIsKebun(!isKebun)} />
+          </View>
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Luas Kolam</Text>
+          <Text style={styles.label}>Luas Kolam (Ha)</Text>
           <TextInput
             style={styles.input}
-            placeholder="Contoh: 2978.45 Ha"
             placeholderTextColor="#999"
+            keyboardType="numeric"
             value={form.luaskolam}
             backgroundColor="white"
             onChangeText={v => setForm({ ...form, luaskolam: v })}
           />
         </View>
+
+        {renderBangunanBagiForm()}
+
+        {/* Form Luas Persawahan */}
+        {!isBangunanBagi && (
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Luas Persawahan (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={form.luassawah}
+              keyboardType="numeric"
+              onChangeText={(v) => setForm({...form, luassawah: v})}
+            />
+          </View>
+        )}
+
+        {/* Form Luas Perkebunan */}
+        {!isBangunanBagi && (
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Luas Perkebunan (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={form.luaskebun}
+              keyboardType="numeric"
+              onChangeText={(v) => setForm({...form, luaskebun: v})}
+            />
+          </View>
+        )}
+
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Keterangan Tambahan</Text>
@@ -604,5 +824,40 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     tintColor: 'gray',
+  },
+  saluranContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  saluranTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
+  },
+  tambahButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  tambahButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  hapusButton: {
+    backgroundColor: '#f44336',
+    padding: 8,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  hapusButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

@@ -105,7 +105,7 @@ export async function submitData(req, res) {
     const {
       nama, jenis, tanggal, fungsi, bahan, lokasi,
       kondisi, luasoncoran, luaskolam, jeniskebutuhan,
-      keterangantambahan, koordinat, foto
+      keterangantambahan, koordinat, foto, id_user, luassawah, luaskebun
     } = req.body;
   
     try {
@@ -125,12 +125,12 @@ export async function submitData(req, res) {
         INSERT INTO bangunan_irigasi (
           nama, jenis, tanggal, fungsi, bahan, lokasi, kondisi,
           luasoncoran, luaskolam, jeniskebutuhan, keterangantambahan,
-          koordinat, foto, id_saluran
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+          koordinat, foto, id_saluran, id_user, luassawah, luaskebun
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
       `, [
         nama, jenis, tanggal, fungsi, bahan, lokasi, kondisi,
         luasoncoran, luaskolam, jeniskebutuhan, keterangantambahan,
-        koordinat, foto, id_saluran
+        koordinat, foto, id_saluran, id_user, luassawah, luaskebun
       ]);
   
       res.status(201).json({ message: 'Data bangunan irigasi berhasil disimpan' });
