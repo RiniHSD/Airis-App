@@ -241,7 +241,7 @@ const App = ({navigation}) => {
 
         <View style={styles.containerMap}>
             <WebView
-            source={{ uri: 'https://rinihsd.github.io/WebView-PRESISI/peta.html' }}
+            source={{ uri: 'https://rinihsd.github.io/WebView-AIRIS/peta_tools.html' }}
             style={styles.webView}
             />
         </View>

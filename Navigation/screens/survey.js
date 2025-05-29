@@ -434,6 +434,10 @@ export default function SurveyPage() {
       luaskebun: form.luaskebun
     };
 
+    if (isBangunanBagi) {
+      data.saluranBagi = saluranBagi;
+    }
+
     console.log('Data yang dikirim:', data);
   
     try {
@@ -498,10 +502,10 @@ export default function SurveyPage() {
           <Text style={styles.recordTextSmall}>Rekam</Text>
         </TouchableOpacity>
       </View>
-      <Text>Latitude  : {internalData?.latitude != null ? internalData.latitude.toFixed(10) : 'Belum tersedia dari GPSHP'}</Text>
-      <Text>Longitude : {internalData?.longitude != null ? internalData.longitude.toFixed(10) : 'Belum tersedia dari GPSHP'}</Text>
-      <Text>Altitude  : {internalData?.altitude != null ? internalData.altitude.toFixed(2) + ' m' : 'Belum tersedia dari GPSHP'}</Text>
-      <Text>Akurasi : {internalData?.accuracy != null ? internalData.accuracy.toFixed(2) + ' m' : 'Belum tersedia dari GPSHP'}</Text>
+      <Text>Latitude  : {internalData?.latitude != null ? internalData.latitude.toFixed(10) : 'Koordinat internal belum tersedia'}</Text>
+      <Text>Longitude : {internalData?.longitude != null ? internalData.longitude.toFixed(10) : 'Koordinat internal belum tersedia'}</Text>
+      <Text>Altitude  : {internalData?.altitude != null ? internalData.altitude.toFixed(2) + ' m' : 'Koordinat internal belum tersedia'}</Text>
+      <Text>Akurasi : {internalData?.accuracy != null ? internalData.accuracy.toFixed(2) + ' m' : 'Koordinat internal belum tersedia'}</Text>
     </View>
   );
 

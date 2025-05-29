@@ -54,7 +54,7 @@ export default function GPSHP() {
         console.log('[GPSHP] Koordinat internal diperbarui:', coords);
       },
       (error) => console.error('Geolocation error:', error),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 } // maximumAge: 0 untuk menghindari cache
+      { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 } // maximumAge: 0 untuk menghindari cache
     );
   };
 
@@ -157,12 +157,13 @@ export default function GPSHP() {
             <Text style={styles.scanButtonText}>Hentikan Streaming</Text>
           </TouchableOpacity>
         </View>
+        <Text>Proses membutuhkan waktu beberapa detik untuk perangkat dapat menerima lokasi.</Text>
       </View>
 
       <View style={{ height: 470, marginVertical: 10 }}>
         <WebView
           ref={webViewRef}
-          source={{ uri: 'https://rinihsd.github.io/WebView-PRESISI/peta.html' }}
+          source={{ uri: 'https://rinihsd.github.io/WebView-AIRIS/peta_tools.html' }}
           onLoadStart={() => console.log('[DEBUG] WebView mulai memuat...')}
           onLoadEnd={() => console.log('[DEBUG] WebView selesai memuat')}
           onError={(syntheticEvent) => {
@@ -188,6 +189,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 20,
+    marginBottom: 10,
   },
   scanButton: {
     padding: 10,
