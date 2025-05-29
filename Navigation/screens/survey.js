@@ -418,51 +418,39 @@ export default function SurveyPage() {
 
     try {
       const userId = await AsyncStorage.getItem('userId');
-      id_user = parseInt(userId, 10); // jika kamu simpan sebagai string
+      id_user = parseInt(userId, 10);
     } catch (err) {
       console.error('Gagal mengambil userId dari AsyncStorage:', err.message);
       Alert.alert('Error', 'Gagal mengambil informasi pengguna.');
       return;
     }
 
-    const formData = new FormData();
-    if (foto) {
-      formData.append('foto', {
-        uri: foto,
-        name: 'foto.jpg',
-        type: 'image/jpeg',
-    });
-    }
-
-    formData.append('nama', form.nama);
-    formData.append('jenis', form.jenis);
-    formData.append('tanggal', form.tanggal);
-    formData.append('fungsi', form.fungsi);
-    formData.append('bahan', form.bahan);
-    formData.append('lokasi', finalLokasi);
-    formData.append('kondisi', form.kondisi);
-    formData.append('luasoncoran', form.luasoncoran);
-    formData.append('luaskolam', form.luaskolam);
-    formData.append('jeniskebutuhan', kebutuhan);
-    formData.append('keterangantambahan', form.keterangantambahan);
-    formData.append('koordinat', `${latitude}, ${longitude}`);
-    formData.append('id_user', id_user.toString());
-    formData.append('luassawah', form.luassawah);
-    formData.append('luaskebun', form.luaskebun);
+    const data = {
+      ...form,
+      koordinat: `${latitude}, ${longitude}`,
+      lokasi: finalLokasi,
+      jeniskebutuhan: kebutuhan,
+      id_user,
+      luassawah: form.luassawah,
+      luaskebun: form.luaskebun
+    };
 
     if (isBangunanBagi) {
-      formData.append('saluranBagi', JSON.stringify(saluranBagi));
+      data.saluranBagi = saluranBagi;
     }
 
-    console.log('Data yang dikirim:', formData);
+    console.log('Data yang dikirim:', data);
   
     try {
       const res = await fetch('https://backend-airis-app.vercel.app/auth/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'multipart/form-data' },
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-  
+
+      const resText = await res.text();
+      console.log('📨 Server response (text):', resText);
+
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Gagal menyimpan data');
       Alert.alert('Sukses', 'Data berhasil disimpan');
