@@ -448,9 +448,6 @@ export default function SurveyPage() {
         body: JSON.stringify(data)
       });
 
-      const resText = await res.text();
-      console.log('📨 Server response (text):', resText);
-
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Gagal menyimpan data');
       Alert.alert('Sukses', 'Data berhasil disimpan');
