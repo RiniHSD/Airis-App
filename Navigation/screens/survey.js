@@ -414,8 +414,8 @@ export default function SurveyPage() {
   };
   
   const handleSubmit = async () => {
-
     let id_user = null;
+
     try {
       const userId = await AsyncStorage.getItem('userId');
       id_user = parseInt(userId, 10); // jika kamu simpan sebagai string
@@ -424,27 +424,43 @@ export default function SurveyPage() {
       Alert.alert('Error', 'Gagal mengambil informasi pengguna.');
       return;
     }
-    const data = {
-      ...form,
-      koordinat: `${latitude}, ${longitude}`,
-      lokasi: finalLokasi,
-      jeniskebutuhan: kebutuhan,
-      id_user,
-      luassawah: form.luassawah,
-      luaskebun: form.luaskebun
-    };
 
-    if (isBangunanBagi) {
-      data.saluranBagi = saluranBagi;
+    const formData = new FormData();
+    if (foto) {
+      formData.append('foto', {
+        uri: foto,
+        name: 'foto.jpg',
+        type: 'image/jpeg',
+    });
     }
 
-    console.log('Data yang dikirim:', data);
+    formData.append('nama', form.nama);
+    formData.append('jenis', form.jenis);
+    formData.append('tanggal', form.tanggal);
+    formData.append('fungsi', form.fungsi);
+    formData.append('bahan', form.bahan);
+    formData.append('lokasi', finalLokasi);
+    formData.append('kondisi', form.kondisi);
+    formData.append('luasoncoran', form.luasoncoran);
+    formData.append('luaskolam', form.luaskolam);
+    formData.append('jeniskebutuhan', kebutuhan);
+    formData.append('keterangantambahan', form.keterangantambahan);
+    formData.append('koordinat', `${latitude}, ${longitude}`);
+    formData.append('id_user', id_user.toString());
+    formData.append('luassawah', form.luassawah);
+    formData.append('luaskebun', form.luaskebun);
+
+    if (isBangunanBagi) {
+      formData.append('saluranBagi', JSON.stringify(saluranBagi));
+    }
+
+    console.log('Data yang dikirim:', formData);
   
     try {
       const res = await fetch('https://backend-airis-app.vercel.app/auth/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'multipart/form-data' },
+        body: formData,
       });
   
       const result = await res.json();
