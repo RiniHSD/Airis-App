@@ -5,12 +5,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import GPSPage from './screens/gps';
 import GPSStack from './screens/GPSStack';
-import MapPage from './screens/map';
-import SurveyPage from './screens/survey';
-import ListPage from './screens/list';
-import AccountPage from './screens/account';
+import MapStack from './screens/mapstack';
+import SurveyStack from './screens/surveystack';
+import ListStack from './screens/ListStack';
+import UserStack from './screens/UserStack';
 import Login from './screens/login';
 import Register from './screens/register';
 import ConnectNTRIP from './page/Internet/index';
@@ -75,11 +74,11 @@ function MainTabs({ navigation, onLogout }) {
         })}
       >
         <Tab.Screen name="GPS" component={GPSStack} />
-        <Tab.Screen name="Map" component={MapPage} />
-        <Tab.Screen name="Survey" component={SurveyPage} />
-        <Tab.Screen name="List" component={ListPage} />
+        <Tab.Screen name="Map" component={MapStack} />
+        <Tab.Screen name="Survey" component={SurveyStack} />
+        <Tab.Screen name="List" component={ListStack} />
         <Tab.Screen name="User">
-          {(props) => <AccountPage {...props} onLogout={onLogout} />}
+          {(props) => <UserStack {...props} onLogout={onLogout} />}
         </Tab.Screen>
       </Tab.Navigator>
   );

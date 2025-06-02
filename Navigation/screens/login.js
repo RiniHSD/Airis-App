@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BASE_URL from '../config/url';
 
 export default function Login({ navigation, onLogin }) {
     const [email, setEmail] = useState ('');
@@ -13,7 +14,7 @@ export default function Login({ navigation, onLogin }) {
       }
       
       try {
-          const response = await fetch('https://backend-airis-app.vercel.app/auth/login', {
+          const response = await fetch(`${BASE_URL}/auth/login`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email, password })

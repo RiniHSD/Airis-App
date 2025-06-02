@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BASE_URL from '../config/url';
 
 export default function Register({ navigation }) {
   const [name, setName] = useState('');
@@ -24,7 +25,7 @@ export default function Register({ navigation }) {
     console.log('Data yang dikirim:', { name, email, telp, password, namaIrigasi })
     
     try {
-      const res = await fetch('https://backend-airis-app.vercel.app/auth/register', {
+      const res = await fetch(`${BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ name, email, telp, password, namaIrigasi })

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Linking, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import BASE_URL from '../config/url';
 
 export default function AccountPage({ navigation, onLogout  }) {
   const [userInfo, setUserInfo] = useState({
@@ -10,15 +11,13 @@ export default function AccountPage({ navigation, onLogout  }) {
     nama_irigasi: '',
   });
 
-  
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         console.log('USER ID:', userId);
 
-        const res = await fetch(`https://backend-airis-app.vercel.app/auth/user/${userId}`);
+        const res = await fetch(`${BASE_URL}/auth/user/${userId}`);
 
         if (!res.ok) {
           console.log('Status:', res.status);
@@ -45,8 +44,6 @@ export default function AccountPage({ navigation, onLogout  }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>PROFIL PENGGUNA</Text>
-
       <View style={styles.box}>
         <Text style={styles.label}>Nama:</Text>
         <Text style={styles.value}>{userInfo.name}</Text>

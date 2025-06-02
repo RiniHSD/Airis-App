@@ -13,10 +13,11 @@ export default function GPSStack() {
       }, headerTintColor: '#fff',
       headerTitleStyle: {
         fontWeight: 'bold',
-        color: '#fff'
-      }
+        color: '#fff',
+      },
+      headerTitleAlign: 'center',
       }}>
-      <Stack.Screen name="GPSPage" component={GPSPage} options={{ title: 'Pilih Mode GPS' }} />
+      <Stack.Screen name="GPSPage" component={GPSPage} options={{ title: 'KONEKSI ALAT' }} />
       <Stack.Screen name="GPSHP" component={GPSHP} options={{ title: 'Pengukuran GNSS Non Presisi' }} />
       <Stack.Screen name="GPSGNSS" component={GPSGNSS} options={{ title: 'Pengukuran GNSS Presisi' }} />
     </Stack.Navigator>

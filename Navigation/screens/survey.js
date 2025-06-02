@@ -17,6 +17,9 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { selectStreamData } from '../config/streamSlice';
 import { Picker } from '@react-native-picker/picker';
 import CustomPicker from '../assets/CustomPicker';
+import BASE_URL from '../config/url';
+import { BASE_UPLOAD } from '../config/url';
+import RNFS from 'react-native-fs';
 
 
 const CustomRadioButton = ({ label, selected, onSelect }) => (
@@ -363,39 +366,42 @@ export default function SurveyPage() {
           onPress: () => {
             const options = {
               mediaType: 'photo',
-              includeBase64: false,
+              includeBase64: true,
             };
-            launchCamera(options, (response) => {
-              if (response.didCancel) {
-                console.log('Anda membatalkan pengambilan foto');
-              } else if (response.errorCode) {
-                console.log('Gagal mengambil foto:', response.errorMessage);
-              } else if (response.assets && response.assets.length > 0) {
+            launchCamera(options, async (response) => {
+              if (response.assets && response.assets.length > 0) {
                 const uri = response.assets[0].uri;
-                setForm((prevState) => ({ ...prevState, [name]: uri }));
+                try {
+                  const uploadedUrl = await uploadImageToServer(uri);
+                  console.log('✅ Upload sukses, URL:', uploadedUrl);
+                  setForm((prev) => ({ ...prev, [name]: uploadedUrl }));
+                } catch (err) {
+                  console.error('❌ Upload gagal:', err);
+                  Alert.alert('Upload Gagal', err.message);
+                }
               }
-            });
+            }); 
           },
         },
         {
           text: 'Galeri',
-          onPress: () => {
-            const options = {
-              mediaType: 'photo',
-              includeBase64: false,
-            };
-            launchImageLibrary(options, (response) => {
-              if (response.didCancel) {
-                console.log('Anda membatalkan pemilihan gambar');
-              } else if (response.errorCode) {
-                console.log('Gagal memilih gambar:', response.errorMessage);
-              } else if (response.assets && response.assets.length > 0) {
+          onPress: async () => {
+            const options = { mediaType: 'photo', includeBase64: true };
+            launchImageLibrary(options, async (response) => {
+              if (response.assets && response.assets.length > 0) {
                 const uri = response.assets[0].uri;
-                setForm((prevState) => ({ ...prevState, [name]: uri }));
+                try {
+                  const uploadedUrl = await uploadImageToServer(uri);
+                  console.log('✅ Upload sukses, URL:', uploadedUrl);
+                  setForm((prev) => ({ ...prev, [name]: uploadedUrl }));
+                } catch (err) {
+                  console.error('❌ Upload gagal:', err);
+                  Alert.alert('Upload Gagal', err.message);
+                }
               }
             });
-          },
-        },
+          }
+        },   
         {
           text: 'Batal',
           style: 'cancel',
@@ -432,7 +438,8 @@ export default function SurveyPage() {
       jeniskebutuhan: kebutuhan,
       id_user,
       luassawah: form.luassawah,
-      luaskebun: form.luaskebun
+      luaskebun: form.luaskebun,
+      foto: form.foto
     };
 
     if (isBangunanBagi) {
@@ -442,7 +449,7 @@ export default function SurveyPage() {
     console.log('Data yang dikirim:', data);
   
     try {
-      const res = await fetch('https://backend-airis-app.vercel.app/auth/submit', {
+      const res = await fetch(`${BASE_URL}/auth/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -455,7 +462,33 @@ export default function SurveyPage() {
       Alert.alert('Error', err.message);
     }
   };
+
+  const uploadImageToServer = async (uri) => {
+    const filename = uri.split('/').pop();
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : `image`;
   
+    const formData = new FormData();
+    formData.append('photo', {  // <-- harus 'photo' sesuai backend
+      uri,
+      name: filename,
+      type,
+    });
+  
+    const res = await fetch('https://backend-airis-app.vercel.app/auth/upload', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  
+    const json = await res.json();
+  
+    if (!res.ok) throw new Error(json.error || 'Upload gagal');
+  
+    return json.fileUrl; // harus sesuai key yang dikirim backend
+  };
 
   const renderCardEksternal = () => (
     <View style={styles.card}>
@@ -718,7 +751,7 @@ export default function SurveyPage() {
           </View>
         </View>
 
-        <TouchableOpacity onPress={handleSubmit} style={{ marginTop: 20, backgroundColor: '#00AEEF', padding: 10 }}>
+        <TouchableOpacity onPress={handleSubmit} style={{ backgroundColor: '#00AEEF', padding: 10, alignItems: 'center', borderRadius: 6 }}>
           <Text style={{ color: 'white', fontWeight: 'bold' }}>SIMPAN</Text>
         </TouchableOpacity>
         
