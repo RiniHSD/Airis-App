@@ -18,8 +18,6 @@ import { selectStreamData } from '../config/streamSlice';
 import { Picker } from '@react-native-picker/picker';
 import CustomPicker from '../assets/CustomPicker';
 import BASE_URL from '../config/url';
-import { BASE_UPLOAD } from '../config/url';
-import RNFS from 'react-native-fs';
 
 
 const CustomRadioButton = ({ label, selected, onSelect }) => (
@@ -475,7 +473,7 @@ export default function SurveyPage() {
       type,
     });
   
-    const res = await fetch('https://backend-airis-app.vercel.app/auth/upload', {
+    const res = await fetch(`${BASE_URL}/auth/upload`, {
       method: 'POST',
       body: formData,
       headers: {

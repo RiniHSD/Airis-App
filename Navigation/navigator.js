@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import SplashScreen from './screens/SpashScreen';
 import GPSStack from './screens/GPSStack';
 import MapStack from './screens/mapstack';
 import SurveyStack from './screens/surveystack';
@@ -87,6 +88,15 @@ function MainTabs({ navigation, onLogout }) {
 export default function Navigation() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000); // tampil 3 detik
+  
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -95,8 +105,9 @@ export default function Navigation() {
       setLoading(false);
     };
     checkLogin();
-  }, []);
+  }, []);  
 
+  if (showSplash) return <SplashScreen />;
   if (loading) return null;
 
   return (
