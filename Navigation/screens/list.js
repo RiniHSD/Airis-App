@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, SafeAreaView, TouchableOpacity, TextInput, Image  } from 'react-native';
 import BASE_URL from '../config/url';
 import LOCAL_URL from '../config/localhost';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function ListPage() {
 
@@ -13,6 +13,7 @@ export default function ListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchBangunan = async () => {
@@ -36,10 +37,10 @@ export default function ListPage() {
       <Text style={styles.cell}>{item.jenis}</Text>
       <Text style={styles.cell}>{item.lokasi}</Text>
       <View style={styles.iconContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Titiklokasi', { bangunan: item })}>
           <Image source={require('../assets/icons/view.png')} style={styles.icon} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('EditBangunan', { bangunan: item })}>
           <Image source={require('../assets/icons/edit.png')} style={styles.icon} />
         </TouchableOpacity>
         <TouchableOpacity>
@@ -60,8 +61,6 @@ export default function ListPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Bangunan Irigasi Di Daerah Irigasi</Text>
-
       {/* Header Tabel */}
       <View style={[styles.row, styles.headerRow]}>
         <Text style={[styles.cell, styles.headerCell]}>Kode Bangunan</Text>
@@ -73,7 +72,7 @@ export default function ListPage() {
       <TextInput
         style={styles.searchInput}
         placeholder="Cari bangunan..."
-        placeholderTextColor="#EAEAEA"
+        placeholderTextColor="#ccc"
         value={searchText}
         onChangeText={setSearchText}
       />
@@ -93,7 +92,7 @@ export default function ListPage() {
               style={styles.loadMoreButton}
               onPress={() => setCurrentPage((prev) => prev + 1)}
             >
-              <Text style={styles.loadMoreText}>Load More</Text>
+              <Text style={styles.loadMoreText}>Muat Lebih</Text>
             </TouchableOpacity>
           ) : null)
         }
@@ -123,6 +122,7 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     backgroundColor: '#E3F2FD',
+    marginTop: 10,
   },
   cell: {
     flex: 1,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     padding: 12,
-    backgroundColor: '#2196F3',
+    backgroundColor: '#0daaf0',
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 10,

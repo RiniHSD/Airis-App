@@ -45,8 +45,27 @@ export default function AccountPage({ navigation, onLogout  }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.box}>
-        <Text style={styles.label}>Nama:</Text>
-        <Text style={styles.value}>{userInfo.name}</Text>
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={styles.label}>Nama:</Text>
+            <Text style={styles.value}>{userInfo.name}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                'Konfirmasi Logout',
+                'Yakin ingin keluar dari aplikasi?',
+                [
+                  { text: 'Batal', style: 'cancel' },
+                  { text: 'Keluar', style: 'destructive', onPress: onLogout },
+                ],
+                { cancelable: true }
+              );
+            }}
+          >
+            <Image source={require('../assets/icons/logout.png')} style={styles.logoutIcon} />
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.label}>Email:</Text>
         <Text
@@ -57,21 +76,6 @@ export default function AccountPage({ navigation, onLogout  }) {
         </Text>
         <Text style={styles.label}>Nama Daerah Irigasi:</Text>
         <Text style={styles.value}>{userInfo.nama_irigasi}</Text>
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              'Konfirmasi Logout',
-              'Yakin ingin keluar dari aplikasi?',
-              [
-                { text: 'Batal', style: 'cancel' },
-                { text: 'Keluar', style: 'destructive', onPress: onLogout },
-              ],
-              { cancelable: true }
-            );
-          }}
-        >
-          <Image source={require('../assets/icons/logout.png')} style={styles.icon} />
-        </TouchableOpacity>
 
       </View>
 
@@ -184,5 +188,17 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontSize: 12,
     color: '#555',
+  },
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logoutIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    marginLeft: 10,
+    marginRight: 25,
   },
 });

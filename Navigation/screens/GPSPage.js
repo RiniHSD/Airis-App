@@ -5,20 +5,19 @@ export default function GPSPage({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pilih Mode Pengukuran</Text>
-
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#f2f2f2' }]}
+        <TouchableOpacity
+        style={styles.button}
         onPress={() => navigation.navigate('GPSGNSS')}
-      >
-        <Image source={require('../assets/icons/satellite.png')} style={{ width: 70, height: 70 }} />
+        >
+        <Image source={require('../assets/icons/presisi.jpeg')} style={{ width: 200, height: 200 }} />
         <Text style={styles.buttonText}>Pengukuran dengan GNSS presisi</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#f2f2f2' }]}
+        <TouchableOpacity
+        style={styles.button}
         onPress={() => navigation.navigate('GPSHP')}
-      >
-        <Image source={require('../assets/icons/phone.png')} style={{ width: 70, height: 70 }} />
+        >
+        <Image source={require('../assets/icons/nonpresisi1.jpeg')} style={{ width: 210, height: 210 }} />
         <Text style={styles.buttonText}>Pengukuran dengan GNSS non presisi</Text>
       </TouchableOpacity>
     </View>
@@ -31,12 +30,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ebf4fa',
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 30,
   },
   button: {
     width: '100%',
@@ -44,6 +42,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 10,
+    backgroundColor: '#fff',
   },
   buttonText: {
     color: '#000',

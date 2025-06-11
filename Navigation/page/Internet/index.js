@@ -59,7 +59,7 @@ const ConnectNTRIP = ({navigation}) => {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.card}>
-          <Text style={styles.title}>KONEKSI WIFI</Text>
+          <Text style={styles.title}>INTERNET GNSS</Text>
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>SSID</Text>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     paddingTop: 1,
-    marginTop: 100,
+    marginTop: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

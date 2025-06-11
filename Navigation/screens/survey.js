@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { CoordinateConverter, extractGGAInfo } from '../Helpers/geo_helpers';
@@ -82,6 +83,9 @@ export default function SurveyPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 
+  const [selectedJenisBangunan, setSelectedJenisBangunan] = useState([]);
+  const [jenisLainnya, setJenisLainnya] = useState('');
+
   const saluranList = [
     'Saluran Primer Van Der Wijck',
     'Sekunder Cerbonan Kulon',
@@ -118,6 +122,15 @@ export default function SurveyPage() {
     isKolam ? 'Kolam' : null,
     isKebun ? 'Perkebunan' : null
   ].filter(Boolean).join(', ');
+
+  const toggleJenisBangunan = (item) => {
+    setSelectedJenisBangunan(prev =>
+      prev.includes(item)
+        ? prev.filter(i => i !== item)
+        : [...prev, item]
+    );
+  };
+  
 
   // Di Survey.js, tambahkan useEffect untuk mendengarkan perubahan
   useEffect(() => {
@@ -177,10 +190,12 @@ export default function SurveyPage() {
 
   const namaBangunanOptions = [
     'Bangunan Intake',
+    'Bangunan Ukur',
     'Bangunan Penguras',
-    'Mercu Bendung',
     'Bangunan Bagi',
     'Bangunan Sadap',
+    'Mercu Bendung',
+    'Terjunan',
     'Lainnya'
   ];
 
@@ -196,8 +211,8 @@ export default function SurveyPage() {
   ]);
   
   useEffect(() => {
-    setIsBangunanBagi(form.jenis === 'Bangunan Bagi');
-  }), [form.jenis];
+    setIsBangunanBagi(selectedJenisBangunan.includes('Bangunan Bagi'));
+  }, [selectedJenisBangunan]);  
 
   const tambahSaluranBagi = () => {
     setSaluranBagi([...saluranBagi, {
@@ -220,6 +235,12 @@ export default function SurveyPage() {
     newSaluran[index][field] = value;
     setSaluranBagi(newSaluran);
   };
+
+  const cleanedJenis = selectedJenisBangunan.map(j =>
+    j === 'Lainnya' ? jenisLainnya : j
+  ).filter(Boolean).join(', ');
+  
+
 
   const renderBangunanBagiForm = () => {
     if (!isBangunanBagi) return null;
@@ -299,30 +320,30 @@ export default function SurveyPage() {
 
   const renderNamaBangunanForm = () => (
     <View style={styles.formGroup}>
-      <Text style={styles.label}>Nama Bangunan</Text>
-      <CustomPicker
-        selectedValue={form.jenis}
-        prompt="Pilih jenis bangunan"
-        onValueChange={(itemValue) => setForm({...form, jenis: itemValue})}
-      >
-        {namaBangunanOptions.map((item) => (
-          <Picker.Item key={item} label={item} value={item} />
-        ))}
-      </CustomPicker>
-
-      {form.jenis === 'Lainnya' && (
+      <Text style={styles.label}>Jenis Bangunan</Text>
+      {namaBangunanOptions.map((item) => (
+        <CustomCheckbox
+          key={item}
+          label={item}
+          checked={selectedJenisBangunan.includes(item)}
+          onToggle={() => toggleJenisBangunan(item)}
+        />
+      ))}
+  
+      {selectedJenisBangunan.includes('Lainnya') && (
         <>
           <Text style={styles.label}>Nama Bangunan Lainnya</Text>
           <TextInput
             style={styles.input}
-            placeholder="Masukkan nama bangunan"
-            value={form.jenisLainnya}
-            onChangeText={(v) => setForm({...form, jenisLainnya: v})}
+            placeholder="Contoh: Kolam Terjun"
+            value={jenisLainnya}
+            onChangeText={setJenisLainnya}
           />
         </>
       )}
     </View>
   );
+  
 
   const renderKondisiFisikForm = () => (
     <View style={styles.formGroup}>
@@ -410,6 +431,10 @@ export default function SurveyPage() {
   };
 
   const renderImage = (imageUri) => {
+    if (isLoadingImage) {
+      return <ActivityIndicator size="large" color="#007AFF" />;
+    }
+
     if (imageUri) {
       return <Image source={{ uri: imageUri }} style={styles.imagePreview} />;
     }
@@ -437,7 +462,8 @@ export default function SurveyPage() {
       id_user,
       luassawah: form.luassawah,
       luaskebun: form.luaskebun,
-      foto: form.foto
+      foto: form.foto,
+      jenis: cleanedJenis,
     };
 
     if (isBangunanBagi) {
@@ -455,13 +481,19 @@ export default function SurveyPage() {
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Gagal menyimpan data');
-      Alert.alert('Sukses', 'Data berhasil disimpan');
+      Alert.alert('Sukses', 'Data berhasil disimpan', [
+        { text: 'OK', onPress: resetForm }
+      ]);
     } catch (err) {
       Alert.alert('Error', err.message);
     }
   };
 
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+
   const uploadImageToServer = async (uri) => {
+    setIsLoadingImage(true); // mulai loading
+
     const filename = uri.split('/').pop();
     const match = /\.(\w+)$/.exec(filename);
     const type = match ? `image/${match[1]}` : `image`;
@@ -482,6 +514,7 @@ export default function SurveyPage() {
     });
   
     const json = await res.json();
+    setIsLoadingImage(false); // selesai loading
   
     if (!res.ok) throw new Error(json.error || 'Upload gagal');
   
@@ -541,6 +574,35 @@ export default function SurveyPage() {
     </View>
   );
 
+  const resetForm = () => {
+    setForm({
+      nama: '',
+      jenis: '',
+      fungsi: '',
+      bahan: '',
+      kondisi: '',
+      luassawah: '',
+      luaskebun: '',
+      luaskolam: '',
+      luasoncoran: '',
+      keterangantambahan: '',
+      foto: '',
+    });
+  
+    setSelectedLokasi('');
+    setIsTersier(false);
+    setIsSawah(false);
+    setIsKolam(false);
+    setIsKebun(false);
+    setSelectedLokasi('');
+    setLatitude('');
+    setLongitude('');
+    setJenisLainnya('');
+    setSelectedJenisBangunan([]);
+
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+  };
+  
   return (
     <ScrollView style={styles.container}>
       {renderCardEksternal()}
@@ -629,7 +691,7 @@ export default function SurveyPage() {
           />
         </View>
 
-        <View style={styles.formGroup}>
+        {/* <View style={styles.formGroup}>
           <Text style={styles.label}>Bahan Bangunan</Text>
             <TextInput
               style={styles.input}
@@ -639,7 +701,7 @@ export default function SurveyPage() {
               backgroundColor="white"
               onChangeText={v => setForm({ ...form, bahan: v })}
             />
-        </View>
+        </View> */}
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Lokasi Bangunan</Text>

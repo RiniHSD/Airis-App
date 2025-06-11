@@ -14,6 +14,7 @@ import UserStack from './screens/UserStack';
 import Login from './screens/login';
 import Register from './screens/register';
 import ConnectNTRIP from './page/Internet/index';
+import Titiklokasi from './component/mapBangunan';
 
 const ICONS = {
     GPS: {
@@ -129,7 +130,6 @@ export default function Navigation() {
               setIsLoggedIn(false);
             }} />}
           </Stack.Screen>
-          <Stack.Screen name="KONEKSI WIFI" component={ConnectNTRIP} />
           </>
           
         )}

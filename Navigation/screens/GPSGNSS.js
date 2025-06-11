@@ -160,7 +160,7 @@ const App = ({navigation}) => {
   };
 
   const connectWifi = async () => {
-    navigation.navigate('KONEKSI WIFI');
+    navigation.navigate('ConnectNTRIP');
   }
   
   const ReqConnect = async data => {
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 200,
     borderWidth: 1,
-    borderColor: 'grey',
+    borderColor: '#ccc',
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 10,

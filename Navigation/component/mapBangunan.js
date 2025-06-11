@@ -1,38 +1,15 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WebView from 'react-native-webview';
 
-const dmsToDecimal = (dms, isLatitude = false) => {
-  let isNegative = false;
-  if (dms.startsWith('-')) {
-    isNegative = true;  
-    dms = dms.substring(1);
-  }
-
-  const parts = dms.replace(/[^\d\w\.°'"]+/g, ' ').trim().split(/\s+/);
-  
-  const degrees = parseFloat(parts[0].replace('°', ''));
-  const minutes = parseFloat(parts[1].replace('\'', ''));
-  const seconds = parseFloat(parts[2].replace('\"', ''));
-
-  let decimal = degrees + minutes / 60 + seconds / 3600;
-  
-  if (isLatitude && isNegative) {
-    decimal = -decimal; 
-  }
-
-  console.log(`DMS: ${dms} | Degrees: ${degrees}, Minutes: ${minutes}, Seconds: ${seconds}`);
-  console.log(`Decimal: ${decimal}`);
-
-  return decimal;
-};
+const Stack = createNativeStackNavigator();
 
 const Titiklokasi = ({ route }) => {
-  const { point } = route.params; 
+  const { bangunan } = route.params;
 
-  const longitude = dmsToDecimal(point.koordinat_bujur);  
-  const latitude = dmsToDecimal(point.koordinat_lintang, true);
-  
+  const [latitude, longitude] = bangunan.koordinat.split(',').map(coord => parseFloat(coord.trim()));
+
   useEffect(() => {
     console.log('Converted Longitude:', longitude);
     console.log('Converted Latitude:', latitude);
@@ -65,15 +42,17 @@ const Titiklokasi = ({ route }) => {
             /* Reset button styles */
             .reset-orientation {
               position: absolute;
-              bottom: 20px;
+              bottom: 70px;
               right: 20px;
               background-color: white;
-              padding: 10px 15px;
+              padding: 5px;
               border-radius: 4px;
               box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
               cursor: pointer;
-              font-size: 14px;
               z-index: 1000;  /* Ensure button is above the map */
+              display: flex;
+              align-items: center;
+              justify-content: center;
               text-align: center;
               font-weight: bold;
             }
@@ -93,7 +72,9 @@ const Titiklokasi = ({ route }) => {
               <option value="rbi">Rupa Bumi Indonesia</option>
             </select>
           </div>
-          <div class="reset-orientation" id="reset-button">.</div>
+          <div class="reset-orientation" id="reset-button">
+            <img id="reset-icon" src="https://img.icons8.com/?size=100&id=PqCechdca3bU&format=png&color=000000" alt="Reset Orientation" style="width: 30px; height: 30px;" />
+          </div>
           <script src="https://cdn.jsdelivr.net/npm/ol@v10.2.1/dist/ol.js"></script>
           <script>
             // Basemap layers
@@ -132,7 +113,7 @@ const Titiklokasi = ({ route }) => {
             // Add point feature
             const pointFeature = new ol.Feature({
               geometry: new ol.geom.Point(ol.proj.fromLonLat([${longitude}, ${latitude}])),
-              name: '${point.nama_titik}'
+              name: '${bangunan.name}'
             });
   
             const vectorLayer = new ol.layer.Vector({
@@ -167,6 +148,14 @@ const Titiklokasi = ({ route }) => {
               const view = map.getView();
               view.setRotation(0);  // Set rotation to 0 (north up)
             });
+
+            // Update reset-icon rotation to follow map rotation (compass effect)
+            map.getView().on('change:rotation', function() {
+              const rotation = map.getView().getRotation();
+              const degrees = -rotation * (-180 / Math.PI); // convert radians to degrees (negative to match compass effect)
+              document.getElementById('reset-icon').style.transform = 'rotate(' + degrees + 'deg)';
+            });
+
           </script>
         </body>
       </html>
@@ -174,7 +163,7 @@ const Titiklokasi = ({ route }) => {
   };
   
 
-  return (
+  return ( 
     <View style={styles.container}>
       <WebView
         originWhitelist={['*']}
@@ -189,7 +178,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingBottom: 0,
+    paddingBottom: 10,
   },
   webview: {
     flex: 1,

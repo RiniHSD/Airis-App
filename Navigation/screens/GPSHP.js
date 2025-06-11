@@ -160,7 +160,7 @@ export default function GPSHP() {
         <Text>Proses membutuhkan waktu beberapa detik untuk perangkat dapat menerima lokasi.</Text>
       </View>
 
-      <View style={{ height: 470, marginVertical: 10 }}>
+      <View style={{ height: 430, marginVertical: 10 }}>
         <WebView
           ref={webViewRef}
           source={{ uri: 'https://rinihsd.github.io/WebView-AIRIS/peta_tools.html' }}
