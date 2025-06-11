@@ -89,7 +89,7 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
    ```bash
    npx react-native run-android
 
-4. Jika error saat menjalankan aplikasi, coba untuk membersihkan chace terlebih dahulu
+4. Jika error saat menjalankan aplikasi, coba untuk membersihkan cache terlebih dahulu
    ```bash
    cd android
    ./gradlew clean

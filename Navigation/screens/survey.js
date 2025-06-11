@@ -335,7 +335,8 @@ export default function SurveyPage() {
           <Text style={styles.label}>Nama Bangunan Lainnya</Text>
           <TextInput
             style={styles.input}
-            placeholder="Contoh: Kolam Terjun"
+            placeholder="Contoh: Talang Silang"
+            placeholderTextColor="gray"
             value={jenisLainnya}
             onChangeText={setJenisLainnya}
           />
@@ -729,7 +730,6 @@ export default function SurveyPage() {
           <TextInput
             style={styles.input}
             keyboardType="numeric"
-            placeholderTextColor="#999"
             value={form.luasoncoran}
             backgroundColor="white"
             onChangeText={v => setForm({ ...form, luasoncoran: v })}
@@ -749,18 +749,6 @@ export default function SurveyPage() {
           </View>
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Luas Kolam (Ha)</Text>
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            value={form.luaskolam}
-            backgroundColor="white"
-            onChangeText={v => setForm({ ...form, luaskolam: v })}
-          />
-        </View>
-
         {renderBangunanBagiForm()}
 
         {/* Form Luas Persawahan */}
@@ -772,6 +760,19 @@ export default function SurveyPage() {
               value={form.luassawah}
               keyboardType="numeric"
               onChangeText={(v) => setForm({...form, luassawah: v})}
+            />
+          </View>
+        )}
+
+        {/* Form Luas Kolam */}
+        {!isBangunanBagi && (
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Luas Kolam (Ha)</Text>
+            <TextInput
+              style={styles.input}
+              value={form.luaskolam}
+              keyboardType="numeric"
+              onChangeText={(v) => setForm({...form, luaskolam: v})}
             />
           </View>
         )}
@@ -788,7 +789,6 @@ export default function SurveyPage() {
             />
           </View>
         )}
-
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Keterangan Tambahan</Text>

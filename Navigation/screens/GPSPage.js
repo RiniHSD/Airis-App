@@ -17,7 +17,7 @@ export default function GPSPage({ navigation }) {
         style={styles.button}
         onPress={() => navigation.navigate('GPSHP')}
         >
-        <Image source={require('../assets/icons/nonpresisi1.jpeg')} style={{ width: 210, height: 210 }} />
+        <Image source={require('../assets/icons/nonpresisi.jpeg')} style={{ width: 210, height: 210 }} />
         <Text style={styles.buttonText}>Pengukuran dengan GNSS non presisi</Text>
       </TouchableOpacity>
     </View>

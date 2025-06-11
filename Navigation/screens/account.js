@@ -115,7 +115,7 @@ export default function AccountPage({ navigation, onLogout  }) {
             </TouchableOpacity>
           ))}
         </View>
-        <Text style={styles.footer}>© SIG UGM 2025 - All right reserved</Text>
+        <Text style={styles.footer}>©2025 - All right reserved</Text>
       </View>
     </ScrollView>
   );

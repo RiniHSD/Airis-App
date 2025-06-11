@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, SafeAreaView, TouchableOpacity, TextInput, Image  } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, SafeAreaView, TouchableOpacity, TextInput, Image, Alert  } from 'react-native';
 import BASE_URL from '../config/url';
 import LOCAL_URL from '../config/localhost';
 import { useNavigation } from '@react-navigation/native';
@@ -31,6 +31,38 @@ export default function ListPage() {
     fetchBangunan();
   }, []);
 
+  const handleDeleteBangunan = async (id) => {
+    try {
+      console.log('🧠 Menampilkan Alert konfirmasi hapus...');
+      Alert.alert(
+        'Konfirmasi',
+        'Yakin ingin menghapus data bangunan ini?',
+        [
+          { text: 'Batal', style: 'cancel' },
+          {
+            text: 'Hapus',
+            style: 'destructive',
+            onPress: async () => {
+              const res = await fetch(`${BASE_URL}/auth/bangunan/${id}`, {
+                method: 'DELETE',
+              });
+  
+              const result = await res.json();
+              if (!res.ok) throw new Error(result.error || 'Gagal menghapus');
+  
+              // Refresh data
+              setBangunan((prev) => prev.filter((b) => b.id !== id));
+              Alert.alert('Sukses', 'Data bangunan berhasil dihapus');
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.name}</Text>
@@ -43,7 +75,10 @@ export default function ListPage() {
         <TouchableOpacity onPress={() => navigation.navigate('EditBangunan', { bangunan: item })}>
           <Image source={require('../assets/icons/edit.png')} style={styles.icon} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          console.log('🗑️ Tombol hapus ditekan untuk id:', item.id);
+          handleDeleteBangunan(item.id);
+        }}>
           <Image source={require('../assets/icons/delete.png')} style={styles.icon} />
         </TouchableOpacity>
       </View>
@@ -58,6 +93,9 @@ export default function ListPage() {
       </View>
     );
   }
+
+  
+  
 
   return (
     <SafeAreaView style={styles.container}>
