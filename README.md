@@ -127,11 +127,12 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
   <img src="ss/4.jpg" width="200"/>
   <img src="ss/5.jpg" width="200"/>
   <img src="ss/6.jpg" width="200"/>
-  <img src="ss/7.jpg" width="200"/>
+  <img src="ss/22.jpg" width="200"/>
 </p>
 
 ### Halaman Peta
 <p>Lokasi titik bangunan irigasi hasil pengukuran</p>
+<p>Tampilan pop-up titik, pop-up saluran irigasi, legenda, dan berbagai basemap</p>
 <p align="center">
   <img src="ss/21.jpg" width="200"/>
   <img src="ss/8.jpg" width="200"/>
@@ -140,7 +141,7 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
 </p>
 
 ### Halaman Survey
-<p>Fitur menambahkan data titik</p>
+<p>Fitur menambahkan data titik bangunan irigasi</p>
 <p align="center">
   <img src="ss/11.jpg" width="200"/>
   <img src="ss/12.jpg" width="200"/>
