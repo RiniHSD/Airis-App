@@ -112,3 +112,11 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
 ## 📫 How to reach me
 <a href="https://www.linkedin.com/in/rinihusadiyah/"><img src="https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg" width="40" height="40" /></a>
 <a href="https://mail.google.com/mail/u/rinihusadiyah@gmail.com/#inbox?compose=new"><img src="https://www.vectorlogo.zone/logos/gmail/gmail-icon.svg" width="40" height="40"/></a>
+
+## Tangkapan Layar Aplikasi AIRIS
+### Splashscreen, Login, dan Register
+<p align="center">
+  <img src="ss/1.jpg" width="200"/>
+  <img src="ss/2.jpg" width="200"/>
+  <img src="ss/3.jpg" width="200"/>
+</p>
