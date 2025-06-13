@@ -600,8 +600,6 @@ export default function SurveyPage() {
     setLongitude('');
     setJenisLainnya('');
     setSelectedJenisBangunan([]);
-
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
   };
   
   return (

@@ -24,6 +24,7 @@ const Titiklokasi = ({ route }) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>OpenLayers Map</title>
           <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.2.1/ol.css" />
+          <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
           <style>
             #map { height: 100vh; width: 100%; }
             
@@ -75,6 +76,26 @@ const Titiklokasi = ({ route }) => {
           <div class="reset-orientation" id="reset-button">
             <img id="reset-icon" src="https://img.icons8.com/?size=100&id=PqCechdca3bU&format=png&color=000000" alt="Reset Orientation" style="width: 30px; height: 30px;" />
           </div>
+          <div id="popup-warning" style="
+            display:none;
+            position: fixed;
+            bottom: 340px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 12px 20px;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 9999;
+            font-weight: bold;
+            text-align: center;
+          ">
+            <div style="font-size: 16px; margin-bottom: 4px;">⚠️ PERINGATAN!</div>
+            <div id="popup-message" style="font-size: 14px; font-weight: normal;"></div>
+          </div>
+
           <script src="https://cdn.jsdelivr.net/npm/ol@v10.2.1/dist/ol.js"></script>
           <script>
             // Basemap layers
@@ -135,7 +156,118 @@ const Titiklokasi = ({ route }) => {
               })
             });
             map.addLayer(vectorLayer);
-  
+
+            function showWarning(message) {
+              const popup = document.getElementById('popup-warning');
+              const text = document.getElementById('popup-message');
+            
+              text.textContent = message;
+              popup.style.display = 'block';
+            
+              setTimeout(() => {
+                popup.style.display = 'none';
+              }, 4000);
+            }
+            
+            
+            // Load saluran.geojson dari folder assets
+            fetch('https://rinihsd.github.io/WebView-AIRIS/assets/saluran.geojson')
+              .then(res => res.json())
+              .then(data => {
+                const point = turf.point([${longitude}, ${latitude}]);
+                let minDistance = Infinity;
+
+                // 1. Hitung jarak minimum
+                data.features.forEach(feature => {
+                  try {
+                    if (feature.geometry.type === 'MultiLineString') {
+                      feature.geometry.coordinates.forEach(coordsArray => {
+                        const cleanCoords = coordsArray.map(coord => [coord[0], coord[1]]);
+                        const line = turf.lineString(cleanCoords);
+                        
+                        if (cleanCoords.length >= 2) {
+                          const distance = turf.pointToLineDistance(point, line, { units: 'meters' });
+                          if (distance < minDistance) minDistance = distance;
+                        }
+                      });
+                    }
+                  } catch (e) {
+                    console.error('Error processing feature:', e);
+                  }
+                });
+
+                if (minDistance === Infinity) {
+                  minDistance = 9999;
+                  console.warn('No valid LineString features found');
+                }
+
+                const isOnLine = minDistance <= 5;
+                
+                const message = isOnLine
+                  ? '✅ Bangunan berada di saluran irigasi (Jarak: ' + minDistance.toFixed(3) + ' m)'
+                  : '❌ Bangunan TIDAK berada di saluran (Jarak: ' + minDistance.toFixed(3) + ' m)';
+                
+                showWarning(message);
+
+                // 2. TAMPILKAN SALURAN DI PETA (kode yang hilang)
+                const saluranLayer = new ol.layer.Vector({
+                  source: new ol.source.Vector({
+                    features: new ol.format.GeoJSON().readFeatures(data, {
+                      featureProjection: 'EPSG:3857'
+                    })
+                  }),
+                  style: function(feature) {
+                    const tingkat = feature.get('tingkat') ? feature.get('tingkat').toLowerCase() : '';
+                    
+                    let warna = '#000000'; // default hitam
+                    let tebal = 2; // default
+                    
+                    if (tingkat.includes('primer')) {
+                      warna = '#004da8';
+                      tebal = 4;
+                    } else if (tingkat.includes('sekunder')) {
+                      warna = '#ff0000';
+                      tebal = 3;
+                    } else if (tingkat.includes('tersier')) {
+                      warna = '#a900e6';
+                      tebal = 2;
+                    } else if (tingkat.includes('karangtalun')) {
+                      warna = '#004da8';
+                      tebal = 5;
+                    }
+                    
+                    return new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                        color: warna,
+                        width: tebal
+                      })
+                    });
+                  }
+                });
+                map.addLayer(saluranLayer);
+
+                // 3. UBAH WARNA TITIK BERDASARKAN HASIL VALIDASI
+                pointFeature.setStyle(new ol.style.Style({
+                  image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({ color: isOnLine ? 'green' : 'red' }),
+                    stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+                  }),
+                  text: new ol.style.Text({
+                    text: pointFeature.get('name'),
+                    font: 'bold 12px sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    offsetY: -20
+                  })
+                }));
+
+              })
+              .catch(err => {
+                alert('❌ Gagal memuat saluran.geojson: ' + err.message);
+                console.error(err);
+              });
+
+
             // Layer switcher logic
             const basemapSelect = document.getElementById('basemap-select');
             basemapSelect.addEventListener('change', function() {

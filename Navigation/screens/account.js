@@ -82,40 +82,30 @@ export default function AccountPage({ navigation, onLogout  }) {
       <View style={styles.box}>
         <Text style={styles.subheading}>Tentang Aplikasi</Text>
         <Text style={styles.description}>
-          Aplikasi Mobile GIS yang dirancang untuk membantu proses pemetaan jaringan irigasi secara
+          AIRIS merupakan aplikasi Mobile GIS yang dirancang untuk membantu proses pemetaan jaringan irigasi secara
           praktis, efisien, dan mudah digunakan berbagai pihak.
         </Text>
+        <TouchableOpacity onPress={() => Linking.openURL('https://ke-halaman-frequently-asked-questions')}>
+          <Text style={[styles.link1, { marginTop: 5 }]}>🤔Anda memiliki pertanyaan seputar aplikasi❓</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.box}>
-        <Text style={styles.subheading}>Kontak Pengembang</Text>
+        <Text style={styles.subheading1}>AIRIS APPS</Text>
+
         <Text style={styles.description}>
-          Rini Husadiyah (21/474373/SV/18906){"\n"}
-          Program Studi Sarjana Terapan{"\n"}
-          Sistem Informasi Geografis{"\n"}
-          Departemen Teknologi Kebumian{"\n"}
-          Sekolah Vokasi{"\n"}
-          Universitas Gadjah Mada
+         🛰️ Aplikasi Pemetaan dan Inventarisasi Jaringan Irigasi Berbasis Mobile GIS.
         </Text>
 
-        <Text style={styles.text1}>
-          Lihat proyek lain dari pengembang di sini:
-        </Text>
+        <Text style={styles.description}>📡 Dukungan pengambilan data koordinat RTK dengan akurasi sentimeter.</Text>
+        <Text style={styles.description}>📝 Form survei digital untuk mencatat atribut bangunan irigasi.</Text>
+        <Text style={styles.description}>📷 Dokumentasi foto untuk setiap titik bangunan.</Text>
 
-        <TouchableOpacity onPress={() => Linking.openURL('https://drive.google.com/file/d/12XAL3Lt--pM5rEpibtlvYU9IX3Oo5xhA/view')}>
-          <Text style={[styles.link1, { marginTop: 5 }]}>🌐 https://Portofolio-RiniHusadiyah.com</Text>
+        <TouchableOpacity onPress={() => Linking.openURL('https://www.rinihusadiyah.com')}>
+          <Text style={styles.footer}>AIRIS App ver 1.0</Text>
+          <Text style={styles.footer}>©2025 - All right reserved</Text>
         </TouchableOpacity>
-
-        <View style={styles.socialIcons}>
-          {[
-            { url: 'https://www.linkedin.com/in/rinihusadiyah/', icon: require('../assets/icons/linkedin.png') },
-          ].map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => Linking.openURL(item.url)}>
-              <Image source={item.icon} style={styles.icon} />
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={styles.footer}>©2025 - All right reserved</Text>
+        
       </View>
     </ScrollView>
   );
@@ -170,6 +160,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  subheading1: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
   description: {
     fontSize: 15,
     lineHeight: 22,
@@ -185,7 +181,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     textAlign: 'center',
-    marginTop: 15,
+    marginTop: 5,
     fontSize: 12,
     color: '#555',
   },
