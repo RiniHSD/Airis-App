@@ -133,6 +133,7 @@ Aplikasi ini diuji dengan metode **usability testing** berdasarkan 4 aspek utama
 ### Halaman Peta
 <p>Lokasi titik bangunan irigasi hasil pengukuran</p>
 <p align="center">
+  <img src="ss/21.jpg" width="200"/>
   <img src="ss/8.jpg" width="200"/>
   <img src="ss/9.jpg" width="200"/>
   <img src="ss/10.jpg" width="200"/>
