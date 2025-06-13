@@ -61,6 +61,30 @@ const Titiklokasi = ({ route }) => {
             .reset-orientation:hover {
               background-color: #f0f0f0; /* Slight hover effect */
             }
+
+            .legend-collapsible {
+            position: absolute;
+            bottom: 30px;
+            left: 10px;
+            background-color: white;
+            padding: 8px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+          }
+          
+          .legend-toggle {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            font-weight: bold;
+          }
+          
+          .legend-content {
+            margin-top: 8px;
+          }
           </style>
         </head>
         <body>
@@ -72,6 +96,30 @@ const Titiklokasi = ({ route }) => {
               <option value="esriImagery">Esri Imagery</option>
               <option value="rbi">Rupa Bumi Indonesia</option>
             </select>
+          </div>
+          <div id="legend" style="
+            position: absolute;
+            bottom: 65px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+          ">
+          <strong>Legenda</strong>
+          <div><span style="display:inline-block; width:20px; height:5px; background:#004da8;"></span> Induk Karangtalun</div>
+            <div><span style="display:inline-block; width:20px; height:4px; background:#004da8;"></span> Primer</div>
+            <div><span style="display:inline-block; width:20px; height:3px; background:#ff0000;"></span> Sekunder</div>
+            <div><span style="display:inline-block; width:20px; height:2px; background:#a900e6;"></span> Tersier</div>
+            <div>
+              <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:green; margin-right:6px;"></span>
+              Bangunan berada di saluran
+            </div>
+            <div>
+              <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:red; margin-right:6px;"></span>
+              Bangunan di luar saluran
+            </div>
           </div>
           <div class="reset-orientation" id="reset-button">
             <img id="reset-icon" src="https://img.icons8.com/?size=100&id=PqCechdca3bU&format=png&color=000000" alt="Reset Orientation" style="width: 30px; height: 30px;" />
