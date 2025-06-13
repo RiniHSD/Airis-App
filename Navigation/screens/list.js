@@ -3,6 +3,8 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, SafeAreaView, Touc
 import BASE_URL from '../config/url';
 import LOCAL_URL from '../config/localhost';
 import { useNavigation } from '@react-navigation/native';
+import Share from 'react-native-share';
+import { encode } from 'base-64';
 
 
 export default function ListPage() {
@@ -63,6 +65,60 @@ export default function ListPage() {
     }
   };
 
+   // Fungsi untuk mengonversi data ke format CSV
+   const convertToCSV = () => {
+    if (bangunan.length === 0) return '';
+    
+    // Header CSV
+    const headers = Object.keys(bangunan[0]).join(',');
+    
+    // Baris data
+    const rows = bangunan.map(obj => 
+      Object.values(obj).map(value => 
+        typeof value === 'string' ? `"${value.replace(/"/g, '""')}"` : value
+      ).join(',')
+    ).join('\n');
+    
+    return `${headers}\n${rows}`;
+  };
+
+  // Tambahkan fungsi btoa polyfill untuk React Native
+  const btoa = (str) => {
+    try {
+      return global.btoa(str);
+    } catch (e) {
+      return Buffer.from(str).toString('base64');
+    }
+  };
+
+  // Fungsi untuk mendownload data sebagai CSV
+  const downloadCSV = async () => {
+    try {
+      const csvData = convertToCSV();
+      
+      if (!csvData) {
+        Alert.alert('Info', 'Tidak ada data untuk diunduh');
+        return;
+      }
+  
+      // Gunakan base-64 encode untuk konversi
+      const base64Data = encode(unescape(encodeURIComponent(csvData)));
+      
+      const shareOptions = {
+        title: 'Download Data Bangunan',
+        message: 'Data bangunan irigasi',
+        url: `data:text/csv;base64,${base64Data}`,
+        type: 'text/csv',
+        filename: `bangunan_irigasi_${new Date().toISOString().split('T')[0]}.csv`,
+      };
+      
+      await Share.open(shareOptions);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      Alert.alert('Error', 'Gagal mengunduh data');
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.name}</Text>
@@ -99,6 +155,13 @@ export default function ListPage() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity 
+        style={styles.downloadButton} 
+        onPress={downloadCSV}
+      >
+        <Text style={styles.downloadButtonText}>📥 Download CSV</Text>
+      </TouchableOpacity>
+
       {/* Header Tabel */}
       <View style={[styles.row, styles.headerRow]}>
         <Text style={[styles.cell, styles.headerCell]}>Kode Bangunan</Text>
@@ -114,7 +177,7 @@ export default function ListPage() {
         value={searchText}
         onChangeText={setSearchText}
       />
-
+  
       <FlatList
         data={bangunan.filter(item =>
           item.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -209,5 +272,18 @@ const styles = StyleSheet.create({
   loadMoreText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  downloadButton: {
+    backgroundColor: '#4CAF50',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  downloadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

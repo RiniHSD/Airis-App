@@ -47,7 +47,7 @@ export default function Login({ navigation, onLogin }) {
         <TextInput
           style={styles.input}
           placeholder="Masukkan Email"
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -57,7 +57,7 @@ export default function Login({ navigation, onLogin }) {
         <TextInput
           style={styles.input}
           placeholder="Masukkan Kata Sandi"
-          placeholderTextColor="#EAEAEA"
+          placeholderTextColor="#a6a8ab"
           secureTextEntry
           value={password}
           onChangeText={setPassword}

@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Linking, 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import BASE_URL from '../config/url';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AccountPage({ navigation, onLogout  }) {
   const [userInfo, setUserInfo] = useState({
@@ -85,7 +86,7 @@ export default function AccountPage({ navigation, onLogout  }) {
           AIRIS merupakan aplikasi Mobile GIS yang dirancang untuk membantu proses pemetaan jaringan irigasi secara
           praktis, efisien, dan mudah digunakan berbagai pihak.
         </Text>
-        <TouchableOpacity onPress={() => Linking.openURL('https://ke-halaman-frequently-asked-questions')}>
+        <TouchableOpacity onPress={() => navigation.navigate('FaQ')}>
           <Text style={[styles.link1, { marginTop: 5 }]}>🤔Anda memiliki pertanyaan seputar aplikasi❓</Text>
         </TouchableOpacity>
       </View>

@@ -7,7 +7,7 @@ export default function SplashScreen() {
     <LinearGradient colors={[ '#ffffff', '#ebf4fa', '#43bbf0', '#6dcdf7']} style={styles.container}>
         <Image source={require('../assets/icons/IconAiris.png')} style={styles.image} />
         <Text style={styles.title}>AIRIS</Text>
-        <Text style={styles.text}>Aplikasi Pemetaan Irigasi Sistematis</Text>
+        <Text style={styles.text}>Aplikasi Pemetaan dan Inventarisasi Jaringan Irigasi Berbasis Mobile GIS</Text>
     </LinearGradient>
   );
 }
